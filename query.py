@@ -1,7 +1,7 @@
 import abc
 
 
-class ParserInterface(metaclass=abc.ABCMeta):
+class QueryInterface(metaclass=abc.ABCMeta):
 
     @classmethod
     def __subclasshook__(cls, subclass):
