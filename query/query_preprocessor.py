@@ -22,16 +22,18 @@ class QueryPreprocessor:
 
     def __validate_variables(self, variables_input):
         variables = variables_input.split(";")
-        if variables[-1].strip() == '':
+        if variables[-1].strip() == "":
             variables.pop()
             for variable in variables:
-                variable = variable[1:] if variable[0] == ' ' else variable
+                variable = variable[1:] if variable[0] == " " else variable
                 entity_from_variable = variable.split(" ")[0]
                 if entity_from_variable not in self.ENTITY_LIST:
-                    raise InvalidVariablesException('#Niepoprawne polecenie w deklaracji')
+                    raise InvalidVariablesException(
+                        "#Niepoprawne polecenie w deklaracji"
+                    )
             return variables_input
         else:
-            raise InvalidVariablesException('#Brak średnika na końcu deklaracji')
+            raise InvalidVariablesException("#Brak średnika na końcu deklaracji")
 
     def __validate_query(self, query_input):
         query_validator = QueryValidator()
