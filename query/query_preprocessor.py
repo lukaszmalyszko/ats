@@ -25,7 +25,7 @@ class QueryPreprocessor:
         if variables[-1].strip() == '':
             variables.pop()
             for variable in variables:
-                variable = variable[1:] if variable[0] == ' ' else variable
+                variable.strip()
                 entity_from_variable = variable.split(" ")[0]
                 if entity_from_variable not in self.ENTITY_LIST:
                     raise InvalidVariablesException('#Niepoprawne polecenie w deklaracji')
