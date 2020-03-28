@@ -26,18 +26,19 @@ class TestQueryPreprocessor(TestCase):
             with self.assertRaises(InvalidVariablesException):
                 self.query_preprocessor.get_input()
 
-    def test_raise_invalid_query_exception_when_no_select_at_the_beginning(self):
-        self.query = "s such that Modifies(s,'x')"
-        input_values = [self.variables, self.query]
-
-        with patch("builtins.input", side_effect=input_values):
-            with self.assertRaises(InvalidQueryException):
-                self.query_preprocessor.get_input()
-
     def test_raise_invalid_variables_exception_when_incorrect_variable_in_variables(
         self,
     ):
-        input_values = [f"incorrect_stmt is; {self.variables}", self.query]
+        self.variables = "incorrect_stmt is;"
+        input_values = [self.variables, self.query]
+
+        with patch("builtins.input", side_effect=input_values):
+            with self.assertRaises(InvalidVariablesException):
+                self.query_preprocessor.get_input()
+
+    def test_raise_invalid_variables_exception_when_name_in_entity_list(self):
+        self.variables = "stmt stmt, while;"
+        input_values = [self.variables, self.query]
 
         with patch("builtins.input", side_effect=input_values):
             with self.assertRaises(InvalidVariablesException):
@@ -45,6 +46,14 @@ class TestQueryPreprocessor(TestCase):
 
     def test_raise_invalid_query_exception_when_no_variable_after_select(self):
         self.query = "Select such that Modifies(s,'x')"
+        input_values = [self.variables, self.query]
+
+        with patch("builtins.input", side_effect=input_values):
+            with self.assertRaises(InvalidQueryException):
+                self.query_preprocessor.get_input()
+
+    def test_raise_invalid_query_exception_when_no_select_at_the_beginning(self):
+        self.query = "s such that Modifies(s,'x')"
         input_values = [self.variables, self.query]
 
         with patch("builtins.input", side_effect=input_values):
