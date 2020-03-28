@@ -3,15 +3,13 @@ from query.query_validator.query_elements import Select
 
 class QueryValidator:
     def __init__(self):
-        self.next_element = Select()
+        self.expected_element = Select()
 
     def validate_query(self, query_string):
         query_elements = self.__get_query_elements(query_string)
         for element in query_elements:
-            if self.next_element.validate(element):
-                self.next_element = self.next_element.expected_element()
-            else:
-                raise InvalidQueryException(self.next_element.error_message)
+            self.expected_element.validate(element)
+            self.expected_element = self.expected_element.next()
 
     def __get_query_elements(self, query_string):
         elements = []
@@ -29,8 +27,3 @@ class QueryValidator:
         elements.append(buffer)
         elements = [element.strip(" ") for element in elements]
         return elements
-
-
-class InvalidQueryException(Exception):
-    def __init(self, message):
-        self.message = message

@@ -3,8 +3,8 @@ from query.query_validator.query_validator import QueryValidator
 
 
 class QueryPreprocessor:
-    variables = ''
-    query = ''
+    variables = ""
+    query = ""
 
     def get_input(self):
         self.variables = self._get_variables()

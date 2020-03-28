@@ -2,7 +2,7 @@ from unittest import TestCase
 from unittest.mock import patch
 
 from query.query_preprocessor import QueryPreprocessor, InvalidVariablesException
-from query.query_validator.query_validator import InvalidQueryException
+from query.query_validator.query_elements import InvalidQueryException
 
 
 class TestQueryPreprocessor(TestCase):
@@ -88,6 +88,22 @@ class TestQueryPreprocessor(TestCase):
     def test_raise_invalid_query_exception_when_no_that_after_such(self):
         self.query = "Select s such Modifies(s, 'x')"
 
+        input_values = [self.variables, self.query]
+
+        with patch("builtins.input", side_effect=input_values):
+            with self.assertRaises(InvalidQueryException):
+                self.query_preprocessor.get_input()
+
+    def test_raise_invalid_query_exception_when_rel_has_no_closing_brackets(self):
+        self.query = "Select s such that Modifies(s, 'x'"
+        input_values = [self.variables, self.query]
+
+        with patch("builtins.input", side_effect=input_values):
+            with self.assertRaises(InvalidQueryException):
+                self.query_preprocessor.get_input()
+
+    def test_raise_invalid_query_exception_when_rel_has_one_argument(self):
+        self.query = "Select s such that Modifies(s)"
         input_values = [self.variables, self.query]
 
         with patch("builtins.input", side_effect=input_values):
