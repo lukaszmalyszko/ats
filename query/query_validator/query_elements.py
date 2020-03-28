@@ -39,7 +39,4 @@ class Variable(Element):
         self.expected_element = Element
 
     def validate(self, value):
-        if re.match(IDENT, value) and value not in KEY_WORDS:
-            return True
-        else:
-            return False
+        return re.match(IDENT, value) and value not in KEY_WORDS

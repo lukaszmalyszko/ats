@@ -59,3 +59,11 @@ class TestQueryPreprocessor(TestCase):
         with patch("builtins.input", side_effect=input_values):
             with self.assertRaises(InvalidQueryException):
                 self.query_preprocessor.get_input()
+
+    def test_raise_invalid_query_exception_when_variable_is_key_word(self):
+        self.query = "Select Select such that Modifies(s,'x')"
+        input_values = [self.variables, self.query]
+
+        with patch("builtins.input", side_effect=input_values):
+            with self.assertRaises(InvalidQueryException):
+                self.query_preprocessor.get_input()
