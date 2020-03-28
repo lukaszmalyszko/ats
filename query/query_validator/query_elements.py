@@ -5,6 +5,12 @@ KEY_WORDS = [
     "such",
     "that",
     "with",
+    "stmt",
+    "while",
+    "assign",
+    "prog_line",
+    "constant",
+    "variable",
 ]
 
 IDENT = "^[a-zA-Z][a-zA-Z0-9#]*$"
