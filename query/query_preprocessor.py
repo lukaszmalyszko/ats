@@ -1,4 +1,6 @@
-from query.query_validator.query_elements import KEY_WORDS
+import re
+
+from query.query_validator.query_elements import KEY_WORDS, IDENT
 from query.query_validator.query_validator import QueryValidator
 
 
@@ -45,9 +47,20 @@ class QueryPreprocessor:
     def __validate_values(self, values):
         if len(values) == 0:
             raise InvalidVariablesException(f"#Brak nazwy w entity")
-        for value in values:
-            if value.replace(",", "") in KEY_WORDS:
+        for i, value in enumerate(values):
+            if ',' in value:
+                try:
+                    values[i+1]
+                except IndexError:
+                    raise InvalidVariablesException("#Niedozwolona znak")
+            value = value.replace(",", "")
+            if value in KEY_WORDS:
                 raise InvalidVariablesException("#Niedozwolona nazwa zmiennej")
+            if not self.__validate_value_name(value):
+                raise InvalidVariablesException("#Niedozwolona nazwa zmiennej")
+
+    def __validate_value_name(self, value):
+        return re.match(IDENT, value)
 
     def __validate_query(self, query_input):
         query_validator = QueryValidator()
