@@ -1,7 +1,7 @@
 from unittest import TestCase
 from unittest.mock import patch
 
-from query.query import QueryPreprocessor, InvalidVariablesException
+from query.query_preprocessor import QueryPreprocessor, InvalidVariablesException
 
 
 class TestQueryPreprocessor(TestCase):
