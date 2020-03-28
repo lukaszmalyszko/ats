@@ -26,14 +26,6 @@ class TestQueryPreprocessor(TestCase):
             with self.assertRaises(InvalidVariablesException):
                 self.query_preprocessor.get_input()
 
-    def test_raise_invalid_query_exception_when_no_select_at_the_beginning(self):
-        self.query = "s such that Modifies(s,'x')"
-        input_values = [self.variables, self.query]
-
-        with patch("builtins.input", side_effect=input_values):
-            with self.assertRaises(InvalidQueryException):
-                self.query_preprocessor.get_input()
-
     def test_raise_invalid_variables_exception_when_incorrect_variable_in_variables(self):
         self.variables = "incorrect_stmt is;"
         input_values = [self.variables, self.query]
@@ -48,4 +40,12 @@ class TestQueryPreprocessor(TestCase):
 
         with patch('builtins.input', side_effect=input_values):
             with self.assertRaises(InvalidVariablesException):
+                self.query_preprocessor.get_input()
+
+    def test_raise_invalid_query_exception_when_no_select_at_the_beginning(self):
+        self.query = "s such that Modifies(s,'x')"
+        input_values = [self.variables, self.query]
+
+        with patch("builtins.input", side_effect=input_values):
+            with self.assertRaises(InvalidQueryException):
                 self.query_preprocessor.get_input()
