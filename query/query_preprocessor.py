@@ -25,10 +25,13 @@ class QueryPreprocessor:
         if variables[-1].strip() == '':
             variables.pop()
             for variable in variables:
-                variable.strip()
-                entity_from_variable = variable.split(" ")[0]
+                variable_values = variable.strip().split(" ")
+                entity_from_variable = variable_values.pop(0)
                 if entity_from_variable not in self.ENTITY_LIST:
                     raise InvalidVariablesException('#Niepoprawne polecenie w deklaracji')
+                for value in variable_values:
+                    if value.replace(',', '') in self.ENTITY_LIST:
+                        raise InvalidVariablesException('#Nazwa taka sama jak nazwa polecenia')
             return variables_input
         else:
             raise InvalidVariablesException('#Brak średnika na końcu deklaracji')

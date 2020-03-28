@@ -35,7 +35,16 @@ class TestQueryPreprocessor(TestCase):
                 self.query_preprocessor.get_input()
 
     def test_raise_invalid_variables_exception_when_incorrect_variable_in_variables(self):
-        input_values = [f"incorrect_stmt is; {self.variables}", self.query]
+        self.variables = "incorrect_stmt is;"
+        input_values = [self.variables, self.query]
+
+        with patch('builtins.input', side_effect=input_values):
+            with self.assertRaises(InvalidVariablesException):
+                self.query_preprocessor.get_input()
+
+    def test_raise_invalid_variables_exception_when_name_in_entity_list(self):
+        self.variables = "stmt stmt, while;"
+        input_values = [self.variables, self.query]
 
         with patch('builtins.input', side_effect=input_values):
             with self.assertRaises(InvalidVariablesException):
