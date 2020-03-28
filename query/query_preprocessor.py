@@ -1,46 +1,53 @@
+from query.query_validator.query_elements import KEY_WORDS
 from query.query_validator.query_validator import QueryValidator
 
 
 class QueryPreprocessor:
-    ENTITY_LIST = [
-        "stmt",
-        "while",
-        "assign",
-        "prog_line",
-        "constant",
-        "variable",
-    ]
+    variables = ''
+    query = ''
 
     def get_input(self):
-        variables_input = input("Podaj deklaracje: ")
+        self.variables = self._get_variables()
+        self.query = self._get_query()
+
+        return self.variables, self.query
+
+    def _get_query(self):
         query_input = input("Podaj zapytanie: ")
-
-        variables = self.__validate_variables(variables_input)
         query = self.__validate_query(query_input)
+        return query
 
-        return variables, query
+    def _get_variables(self):
+        variables_input = input("Podaj deklaracje: ")
+        variables = self.__validate_variables(variables_input)
+        return variables
 
     def __validate_variables(self, variables_input):
         variables = variables_input.split(";")
         if variables[-1].strip() == "":
             variables.pop()
-            self.__validate_single_variable(variables)
+            for variable in variables:
+                self.__validate_single_variable(variable)
             return variables_input
         else:
             raise InvalidVariablesException("#Brak średnika na końcu deklaracji")
 
-    def __validate_single_variable(self, variables):
-        for variable in variables:
-            variable_values = variable.strip().split(" ")
-            entity_from_variable = variable_values.pop(0)
-            if entity_from_variable not in self.ENTITY_LIST:
-                raise InvalidVariablesException("#Niepoprawne polecenie w deklaracji")
-            self.__validate_variable_values(variable_values)
+    def __validate_single_variable(self, variable):
+        values = variable.strip().split(" ")
+        entity = values.pop(0)
+        self.__validate_entity(entity)
+        self.__validate_values(values)
 
-    def __validate_variable_values(self, variable_values):
-        for value in variable_values:
-            if value.replace(",", "") in self.ENTITY_LIST:
-                raise InvalidVariablesException("#Nazwa taka sama jak nazwa polecenia")
+    def __validate_entity(self, entity):
+        if entity not in KEY_WORDS:
+            raise InvalidVariablesException("#Niepoprawne polecenie w deklaracji")
+
+    def __validate_values(self, values):
+        if len(values) == 0:
+            raise InvalidVariablesException(f"#Brak nazwy w entity")
+        for value in values:
+            if value.replace(",", "") in KEY_WORDS:
+                raise InvalidVariablesException("#Niedozwolona nazwa zmiennej")
 
     def __validate_query(self, query_input):
         query_validator = QueryValidator()
