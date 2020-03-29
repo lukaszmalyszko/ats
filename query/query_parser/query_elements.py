@@ -70,8 +70,7 @@ class Variable(Element):
 
     def create_node(self, value, tree):
         select = SelectNode()
-        # Mock
-        variable = SelectNode()
+        variable = self.query_preprocessor.symbols.get_symbol(value)
         select.add_variable(variable)
         tree.set_select(select)
 

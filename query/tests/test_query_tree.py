@@ -22,4 +22,6 @@ class TestQueryPreprocessor(TestCase):
 
         with patch("builtins.input", side_effect=input_values):
             self.query_preprocessor.get_input()
-            self.assertTrue(self.query_preprocessor.tree.root.select)
+            select = self.query_preprocessor.tree.root.select
+            self.assertTrue(select)
+            self.assertEqual(select.variables[0].name, "s")
