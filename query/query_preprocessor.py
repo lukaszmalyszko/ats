@@ -1,11 +1,14 @@
+from query.query_tree.query_tree import QueryTree
 from query.query_validator.query_validator import QueryValidator
 from query.variables_validator.variables_validator import VariablesValidator
 
 
 class QueryPreprocessor:
-    variables = ""
-    query = ""
-    entities = {}
+    def __init__(self):
+        self.variables = ""
+        self.query = ""
+        self.entities = {}
+        self.tree = QueryTree()
 
     def get_input(self):
         self.variables = self._get_variables()
