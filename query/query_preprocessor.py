@@ -1,4 +1,4 @@
-from query.query_tree.query_tree import QueryTree
+from query.query_builder import QueryBuilder
 from query.query_validator.query_validator import QueryValidator
 from query.variables_validator.variables_validator import VariablesValidator
 
@@ -8,13 +8,17 @@ class QueryPreprocessor:
         self.variables = ""
         self.query = ""
         self.entities = {}
-        self.tree = QueryTree()
+        self.tree = None
 
     def get_input(self):
         self.variables = self._get_variables()
         self.query = self._get_query()
 
         return self.variables, self.query
+
+    def build_tree(self):
+        query_builder = QueryBuilder(self)
+        self.tree = query_builder.build_query(self.query)
 
     def check_if_contains_variable(self, var_name):
         for key in self.entities:

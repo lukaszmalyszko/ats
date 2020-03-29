@@ -16,16 +16,20 @@ class Element:
     def validate(self, value):
         element = [
             element
-            for element in CONTSTRUCTION_TO_NEXT_MAPPING.keys()
+            for element in CONSTRUCTION_TO_NEXT_MAPPING.keys()
             if element == value
         ]
         if not element:
             raise InvalidQueryException(self.error_message)
-        self.next = CONTSTRUCTION_TO_NEXT_MAPPING[element[0]]
+        self.next = CONSTRUCTION_TO_NEXT_MAPPING[element[0]]
         return True
 
     def can_query_be_finished(self):
         return True
+
+    @abstractmethod
+    def create_node(self, value):
+        pass
 
 
 class Select(Element):
@@ -41,6 +45,9 @@ class Select(Element):
 
     def can_query_be_finished(self):
         return False
+
+    def create_node(self, value):
+        pass
 
 
 class Variable(Element):
@@ -60,6 +67,10 @@ class Variable(Element):
     def can_query_be_finished(self):
         return False
 
+    def create_node(self, value):
+        # TODO
+        pass
+
 
 class Such(Element):
     def __init__(self, query_preprocessor):
@@ -75,6 +86,10 @@ class Such(Element):
     def can_query_be_finished(self):
         return False
 
+    def create_node(self, value):
+        # TODO
+        pass
+
 
 class That(Element):
     def __init__(self, query_preprocessor):
@@ -89,6 +104,10 @@ class That(Element):
 
     def can_query_be_finished(self):
         return False
+
+    def create_node(self, value):
+        # TODO
+        pass
 
 
 class Relation(Element):
@@ -140,6 +159,10 @@ class Relation(Element):
 
     def _is_params_syntax_correct(self, value):
         return re.match(REL_REF, value)
+
+    def create_node(self, value):
+        # TODO
+        pass
 
 
 class Modifies(Relation):
@@ -264,6 +287,10 @@ class Condition(Element):
     def can_query_be_finished(self):
         return False
 
+    def create_node(self, value):
+        # TODO
+        pass
+
 
 RELATION_TO_MODEL = {
     "Modifies": Modifies,
@@ -274,7 +301,7 @@ RELATION_TO_MODEL = {
     "Follows*": FollowsStar,
 }
 
-CONTSTRUCTION_TO_NEXT_MAPPING = {
+CONSTRUCTION_TO_NEXT_MAPPING = {
     "Select": Variable,
     "such": That,
     "that": Relation,
