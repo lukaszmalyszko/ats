@@ -10,24 +10,39 @@ class TestQueryPreprocessor(TestCase):
         self.variables = "stmt s, s1; assign a, a1, a2; while w; variable v; constant c; prog_line n, n1, n2;"
         self.query = "Select s such that Modifies(s,'x')"
 
-    def test_creates_select_node(self):
+    def test_creates_select_and_empty_result(self):
         input_values = [self.variables, self.query]
 
         with patch("builtins.input", side_effect=input_values):
             self.query_preprocessor.get_input()
             select = self.query_preprocessor.tree.select
+            result = self.query_preprocessor.tree.result
             self.assertTrue(select)
+            self.assertFalse(result)
             self.assertEqual(select.variables[0].name, "s")
 
     def test_creates_modifies_node(self):
-        input_values = [self.variables, self.query]
+        self.__then_query_tree_contains_such_that_node("s", "'x'")
 
-        with patch("builtins.input", side_effect=input_values):
-            self.query_preprocessor.get_input()
-            such_that = self.query_preprocessor.tree.get_such_that_statements()
-            self.assertEqual(len(such_that), 1)
-            self.assertEqual(such_that[0].first_arg, "s")
-            self.assertEqual(such_that[0].second_arg, "'x'")
+    def test_creates_uses_node(self):
+        self.query = "Select s such that Uses(s, 'x') with s.stmt# = 10"
+        self.__then_query_tree_contains_such_that_node("s", "'x'")
+
+    def test_creates_parent_node(self):
+        self.query = "Select s such that Parent(s, s1) with s.stmt# = 10"
+        self.__then_query_tree_contains_such_that_node("s", "s1")
+
+    def test_creates_parent_star_node(self):
+        self.query = "Select s such that Parent*(s, s1) with s.stmt# = 10"
+        self.__then_query_tree_contains_such_that_node("s", "s1")
+
+    def test_creates_follows_node(self):
+        self.query = "Select s such that Follows(s, s1) with s.stmt# = 10"
+        self.__then_query_tree_contains_such_that_node("s", "s1")
+
+    def test_creates_follows_star_node(self):
+        self.query = "Select s such that Follows*(s, s1) with s.stmt# = 10"
+        self.__then_query_tree_contains_such_that_node("s", "s1")
 
     def test_creates_with_node(self):
         self.query = "Select s such that Modifies(s, 'x') with s.stmt# = 10"
@@ -39,3 +54,13 @@ class TestQueryPreprocessor(TestCase):
             self.assertEqual(len(with_stmts), 1)
             self.assertEqual(with_stmts[0].first_attr, "s.stmt#")
             self.assertEqual(with_stmts[0].second_attr, "10")
+
+    def __then_query_tree_contains_such_that_node(self, first_arg, second_arg):
+        input_values = [self.variables, self.query]
+
+        with patch("builtins.input", side_effect=input_values):
+            self.query_preprocessor.get_input()
+            such_that = self.query_preprocessor.tree.get_such_that_statements()
+            self.assertEqual(len(such_that), 1)
+            self.assertEqual(such_that[0].first_arg, first_arg)
+            self.assertEqual(such_that[0].second_arg, second_arg)

@@ -44,6 +44,14 @@ class TestQueryPreprocessor(TestCase):
             result = self.query_preprocessor.get_input()
             self.assertEqual(result, (self.variables, self.query))
 
+    def test_returns_get_input_result_with_empty_param(self):
+        self.query = "Select s such that Modifies(s, _))"
+        input_values = [self.variables, self.query]
+
+        with patch("builtins.input", side_effect=input_values):
+            result = self.query_preprocessor.get_input()
+            self.assertEqual(result, (self.variables, self.query))
+
     def test_raise_invalid_variables_exception_when_no_semicolon_at_the_end(self):
         input_values = [self.variables[:-1], self.query]
 
