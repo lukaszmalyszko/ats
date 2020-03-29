@@ -1,7 +1,7 @@
 class Stmt:
     def __init__(self, name):
         self.name = name
-        self.line = 'INTEGER'
+        self.line = "INTEGER"
         self.type = "stmt"
 
 
@@ -29,10 +29,10 @@ class Variable(Ref):
 class Constant(Ref):
     def __init__(self, name):
         super().__init__(name)
-        self.value = 'INTEGER'
+        self.value = "INTEGER"
 
 
 class ProgLine(Ref):
     def __init__(self, name):
         super().__init__(name)
-        self.value = 'INTEGER'
+        self.value = "INTEGER"

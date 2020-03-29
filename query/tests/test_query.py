@@ -97,7 +97,9 @@ class TestQueryPreprocessor(TestCase):
 
     def __assert_names(self, expected_names):
         for name in expected_names:
-            self.assertTrue(self.query_preprocessor.check_if_contains_variable(name))
+            self.assertTrue(
+                self.query_preprocessor.declarations.check_if_contains_variable(name)
+            )
 
     def __then_run_patched_get_input_with_assert_raises_invalid_variables_exception(
         self, input_values

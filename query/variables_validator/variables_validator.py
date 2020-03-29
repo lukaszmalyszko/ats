@@ -3,7 +3,14 @@ import re
 
 from query.utils import KEY_WORDS, IDENT
 from query.variables_validator.exceptions import InvalidVariablesException
-from query.variables_validator.variables_elements import Stmt, While, Assign, ProgLine, Constant, Variable
+from query.variables_validator.variables_elements import (
+    Stmt,
+    While,
+    Assign,
+    ProgLine,
+    Constant,
+    Variable,
+)
 
 
 class VariablesValidator:
@@ -76,7 +83,9 @@ class VariablesValidator:
         if values_list:
             for var in values_list:
                 if value == var.name:
-                    raise InvalidVariablesException("#Zmienna o takiej nazwie już istnieje")
+                    raise InvalidVariablesException(
+                        "#Zmienna o takiej nazwie już istnieje"
+                    )
 
         value_obj = self.CONTSTRUCTION_TO_BUILD[self.entity](value)
         self.variables_validated[self.entity].append(value_obj)
