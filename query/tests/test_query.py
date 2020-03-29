@@ -276,3 +276,11 @@ class TestQueryPreprocessor(TestCase):
             self.assertEqual(
                 self.query_preprocessor.get_input(), (self.variables, self.query)
             )
+
+    def test_build_tree_creates_tree_node(self):
+        input_values = [self.variables, self.query]
+
+        with patch("builtins.input", side_effect=input_values):
+            self.query_preprocessor.get_input()
+            self.query_preprocessor.build_tree()
+            self.assertTrue(self.query_preprocessor.tree.root)
