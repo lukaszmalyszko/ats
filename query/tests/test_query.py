@@ -241,3 +241,12 @@ class TestQueryPreprocessor(TestCase):
         with patch("builtins.input", side_effect=input_values):
             with self.assertRaises(InvalidQueryException):
                 self.query_preprocessor.get_input()
+
+    def test_returns_get_input_result_with_multiple_such_that(self):
+        self.query = "Select s such that Modifies(s, 'x') such that Follows(s, s1) such that Uses(s, 'x')"
+        input_values = [self.variables, self.query]
+
+        with patch("builtins.input", side_effect=input_values):
+            self.assertEqual(
+                self.query_preprocessor.get_input(), (self.variables, self.query)
+            )
