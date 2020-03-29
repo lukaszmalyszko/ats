@@ -10,3 +10,10 @@ class SymbolContainer:
                         return var.type == var_type
                     return True
         return False
+
+    def get_symbol(self, var_name):
+        for var_list in self.entities.values():
+            for var in var_list:
+                if var_name == var.name:
+                    return var
+        return False
