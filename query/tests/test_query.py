@@ -68,9 +68,19 @@ class TestQueryPreprocessor(TestCase):
             input_values
         )
 
-    def __then_run_patched_get_input_with_assert_raises_invalid_variables_exception(
-        self, input_values
-    ):
+    def test_add_variables_to_entities(self):
+        self.variables = "stmt s, s1; assign a, a1, a2;"
+        input_values = [self.variables, self.query]
+        expected_entities = {
+            "stmt": ["s", "s1"],
+            "assign": ["a", "a1", "a2"],
+        }
+
+        with patch("builtins.input", side_effect=input_values):
+            self.query_preprocessor.get_input()
+            self.assertDictEqual(self.query_preprocessor.entities, expected_entities)
+
+    def __then_run_patched_get_input_with_assert_raises_invalid_variables_exception(self, input_values):
         with patch("builtins.input", side_effect=input_values):
             with self.assertRaises(InvalidVariablesException):
                 self.query_preprocessor.get_input()
