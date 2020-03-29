@@ -146,7 +146,6 @@ class Parser(ParserInterface):
         self.__match_text('}')
         self.__match_text('else')
         self.__match_text('{')
-        self.__stmt_lst()
         stmt_lst_node_2 = self.__stmt_lst()
         self.__ast.add_child(if_node, stmt_lst_node_2, 2)
         self.__match_text('}')
