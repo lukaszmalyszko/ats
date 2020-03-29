@@ -1,6 +1,6 @@
 import re
 
-from query.query_validator.query_elements import Select
+from query.query_parser.query_elements import Select
 from query.utils import CONDITION
 
 

@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 
 from query.query_preprocessor import QueryPreprocessor
-from query.query_validator.exceptions import InvalidQueryException
+from query.query_parser.exceptions import InvalidQueryException
 from query.variables_validator.exceptions import InvalidVariablesException
 
 

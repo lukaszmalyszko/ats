@@ -1,5 +1,5 @@
-from query.query_builder import QueryBuilder
-from query.query_validator.query_validator import QueryValidator
+from query.query_parser.query_builder import QueryBuilder
+from query.query_parser.query_validator import QueryValidator
 from query.variables_validator.declarations import Declarations
 from query.variables_validator.variables_validator import VariablesValidator
 

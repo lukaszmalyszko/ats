@@ -1,5 +1,5 @@
-from query.query_parser import QueryParser
-from query.query_validator.exceptions import InvalidQueryException
+from query.query_parser.exceptions import InvalidQueryException
+from query.query_parser.query_parser import QueryParser
 
 
 class QueryValidator(QueryParser):
