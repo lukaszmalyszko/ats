@@ -1,21 +1,21 @@
 from query.query_parser.query_builder import QueryBuilder
 from query.query_parser.query_validator import QueryValidator
-from query.variables_validator.declarations import Declarations
-from query.variables_validator.variables_validator import VariablesValidator
+from query.declarations_parser.symbol_container import SymbolContainer
+from query.declarations_parser.declarations_validator import DeclarationsValidator
 
 
 class QueryPreprocessor:
     def __init__(self):
-        self.variables = ""
+        self.declarations = ""
         self.query = ""
-        self.declarations = Declarations()
+        self.symbols = SymbolContainer()
         self.tree = None
 
     def get_input(self):
-        self.variables = self._get_variables()
+        self.declarations = self._get_declarations()
         self.query = self._get_query()
 
-        return self.variables, self.query
+        return self.declarations, self.query
 
     def build_tree(self):
         query_builder = QueryBuilder(self)
@@ -26,18 +26,18 @@ class QueryPreprocessor:
         query = self.__validate_query(query_input)
         return query
 
-    def _get_variables(self):
-        variables_input = input("Podaj deklaracje: ")
-        variables = self.__prepare_and_validate_variables(variables_input)
-        return variables
+    def _get_declarations(self):
+        declarations_input = input("Podaj deklaracje: ")
+        declarations = self.__prepare_and_validate_declarations(declarations_input)
+        return declarations
 
-    def __prepare_and_validate_variables(self, variables_input):
-        variables_validator = VariablesValidator()
-        self.declarations.entities = variables_validator.validate_variables(
-            variables_input
+    def __prepare_and_validate_declarations(self, declarations_input):
+        declarations_validator = DeclarationsValidator()
+        self.symbols.entities = declarations_validator.validate_declarations(
+            declarations_input
         )
 
-        return variables_input
+        return declarations_input
 
     def __validate_query(self, query_input):
         query_validator = QueryValidator(self)

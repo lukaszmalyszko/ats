@@ -5,7 +5,7 @@ from query.utils import INTEGER, IDENT
 class ParamsValidator:
     @staticmethod
     def is_variable_ref_correct(ref, query_preprocessor):
-        if not query_preprocessor.declarations.check_if_contains_variable(ref):
+        if not query_preprocessor.symbols.check_if_contains_symbol(ref):
             return False
         return True
 
@@ -15,7 +15,7 @@ class ParamsValidator:
             # TODO check if program contains line with such number
             return True
         if (
-            not query_preprocessor.declarations.check_if_contains_variable(ref, "stmt")
+            not query_preprocessor.symbols.check_if_contains_symbol(ref, "stmt")
             and ref is not "_"
         ):
             return False
@@ -27,7 +27,7 @@ class ParamsValidator:
             # TODO check if program contains such variable
             return True
         if (
-            not query_preprocessor.declarations.check_if_contains_variable(ref, "ref")
+            not query_preprocessor.symbols.check_if_contains_symbol(ref, "ref")
             and ref is not "_"
         ):
             return False
