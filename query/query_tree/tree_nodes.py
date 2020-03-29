@@ -56,15 +56,14 @@ class Root:
 class SelectNode(Node):
     def __init__(self):
         super().__init__()
-        self._variable = None
+        self._variables = []
 
     @property
-    def variable(self):
-        return self._variable
+    def variables(self):
+        return self._variables
 
-    @variable.setter
-    def variable(self, node):
-        self._variable = node
+    def add_variable(self, node):
+        self._variables.append(node)
 
 
 class SuchThatNode(Node):

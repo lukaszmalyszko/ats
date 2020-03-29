@@ -3,6 +3,7 @@ from abc import abstractmethod
 
 from query.query_parser.exceptions import InvalidQueryException
 from query.query_parser.params_validator import ParamsValidator
+from query.query_tree.tree_nodes import SelectNode
 from query.utils import REL_REF
 
 
@@ -28,7 +29,7 @@ class Element:
         return True
 
     @abstractmethod
-    def create_node(self, value):
+    def create_node(self, value, tree):
         pass
 
 
@@ -46,7 +47,7 @@ class Select(Element):
     def can_query_be_finished(self):
         return False
 
-    def create_node(self, value):
+    def create_node(self, value, tree):
         pass
 
 
@@ -67,9 +68,12 @@ class Variable(Element):
     def can_query_be_finished(self):
         return False
 
-    def create_node(self, value):
-        # TODO
-        pass
+    def create_node(self, value, tree):
+        select = SelectNode()
+        # Mock
+        variable = SelectNode()
+        select.add_variable(variable)
+        tree.set_select(select)
 
 
 class Such(Element):
@@ -86,7 +90,7 @@ class Such(Element):
     def can_query_be_finished(self):
         return False
 
-    def create_node(self, value):
+    def create_node(self, value, tree):
         # TODO
         pass
 
@@ -105,7 +109,7 @@ class That(Element):
     def can_query_be_finished(self):
         return False
 
-    def create_node(self, value):
+    def create_node(self, value, tree):
         # TODO
         pass
 
@@ -160,7 +164,7 @@ class Relation(Element):
     def _is_params_syntax_correct(self, value):
         return re.match(REL_REF, value)
 
-    def create_node(self, value):
+    def create_node(self, value, tree):
         # TODO
         pass
 
@@ -287,7 +291,7 @@ class Condition(Element):
     def can_query_be_finished(self):
         return False
 
-    def create_node(self, value):
+    def create_node(self, value, tree):
         # TODO
         pass
 

@@ -1,6 +1,5 @@
 class QueryTree:
     def __init__(self):
-        self.select = None
         self._root = None
 
     @property
@@ -10,3 +9,6 @@ class QueryTree:
     @root.setter
     def root(self, node):
         self._root = node
+
+    def set_select(self, node):
+        self.root.select = node

@@ -12,6 +12,6 @@ class QueryBuilder(QueryParser):
         tree = QueryTree()
         tree.root = Root()
         for element in query_elements:
-            self.expected_element.validate(element)
+            self.expected_element.create_node(element, tree)
             self.expected_element = self.expected_element.next(self.query_preprocessor)
         return tree
