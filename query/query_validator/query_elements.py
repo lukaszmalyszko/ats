@@ -51,9 +51,11 @@ class Variable(Element):
         self.next = Element
 
     def validate(self, value):
-        if not re.match(IDENT, value) or value in KEY_WORDS:
+        does_variable_exist = ParamsValidator.is_variable_ref_correct(
+            value, self.query_preprocessor
+        )
+        if not does_variable_exist:
             raise InvalidQueryException(self.error_message)
-        ParamsValidator.validate_statement_ref(value, self.query_preprocessor)
 
     def can_query_be_finished(self):
         return False
@@ -148,11 +150,14 @@ class Modifies(Relation):
 
     def validate_params(self):
         # Modifies(stmtRef, entRef)
-        ParamsValidator.validate_statement_ref(
+        is_first_param_correct = ParamsValidator.is_statement_ref_correct(
             self.first_param, self.query_preprocessor
         )
-        ParamsValidator.validate_entity_ref(self.second_param, self.query_preprocessor)
-        pass
+        is_second_param_correct = ParamsValidator.is_entity_ref_correct(
+            self.second_param, self.query_preprocessor
+        )
+        if not is_first_param_correct or not is_second_param_correct:
+            raise InvalidQueryException("# Niepoprawne parametry w Modifies")
 
 
 class Uses(Relation):
@@ -162,7 +167,15 @@ class Uses(Relation):
         self.next = Element
 
     def validate_params(self):
-        pass
+        # Uses(stmtRef, entRef)
+        is_first_param_correct = ParamsValidator.is_statement_ref_correct(
+            self.first_param, self.query_preprocessor
+        )
+        is_second_param_correct = ParamsValidator.is_entity_ref_correct(
+            self.second_param, self.query_preprocessor
+        )
+        if not is_first_param_correct or not is_second_param_correct:
+            raise InvalidQueryException("# Niepoprawne parametry w Uses")
 
 
 class Parent(Relation):
@@ -172,7 +185,15 @@ class Parent(Relation):
         self.next = Element
 
     def validate_params(self):
-        pass
+        # Parent(stmtRef, stmtRef)
+        is_first_param_correct = ParamsValidator.is_statement_ref_correct(
+            self.first_param, self.query_preprocessor
+        )
+        is_second_param_correct = ParamsValidator.is_statement_ref_correct(
+            self.second_param, self.query_preprocessor
+        )
+        if not is_first_param_correct or not is_second_param_correct:
+            raise InvalidQueryException("# Niepoprawne parametry w Parent")
 
 
 class ParentStar(Relation):
@@ -182,7 +203,15 @@ class ParentStar(Relation):
         self.next = Element
 
     def validate_params(self):
-        pass
+        # Parent*(stmtRef, stmtRef)
+        is_first_param_correct = ParamsValidator.is_statement_ref_correct(
+            self.first_param, self.query_preprocessor
+        )
+        is_second_param_correct = ParamsValidator.is_statement_ref_correct(
+            self.second_param, self.query_preprocessor
+        )
+        if not is_first_param_correct or not is_second_param_correct:
+            raise InvalidQueryException("# Niepoprawne parametry w Parent*")
 
 
 class Follows(Relation):
@@ -192,7 +221,15 @@ class Follows(Relation):
         self.next = Element
 
     def validate_params(self):
-        pass
+        # Follows(stmtRef, stmtRef)
+        is_first_param_correct = ParamsValidator.is_statement_ref_correct(
+            self.first_param, self.query_preprocessor
+        )
+        is_second_param_correct = ParamsValidator.is_statement_ref_correct(
+            self.second_param, self.query_preprocessor
+        )
+        if not is_first_param_correct or not is_second_param_correct:
+            raise InvalidQueryException("# Niepoprawne parametry w Follows")
 
 
 class FollowsStar(Relation):
@@ -202,7 +239,15 @@ class FollowsStar(Relation):
         self.next = Element
 
     def validate_params(self):
-        pass
+        # Follows*(stmtRef, stmtRef)
+        is_first_param_correct = ParamsValidator.is_statement_ref_correct(
+            self.first_param, self.query_preprocessor
+        )
+        is_second_param_correct = ParamsValidator.is_statement_ref_correct(
+            self.second_param, self.query_preprocessor
+        )
+        if not is_first_param_correct or not is_second_param_correct:
+            raise InvalidQueryException("# Niepoprawne parametry w Follows*")
 
 
 class Condition(Element):

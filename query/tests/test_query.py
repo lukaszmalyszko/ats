@@ -196,3 +196,48 @@ class TestQueryPreprocessor(TestCase):
         with patch("builtins.input", side_effect=input_values):
             with self.assertRaises(InvalidQueryException):
                 self.query_preprocessor.get_input()
+
+    def test_raise_invalid_query_exception_when_uses_params_are_incorrect(self):
+        self.query = "Select s such that Uses(s, b)"
+
+        input_values = [self.variables, self.query]
+
+        with patch("builtins.input", side_effect=input_values):
+            with self.assertRaises(InvalidQueryException):
+                self.query_preprocessor.get_input()
+
+    def test_raise_invalid_query_exception_when_parent_params_are_incorrect(self):
+        self.query = "Select s such that Parent(s, 'x')"
+
+        input_values = [self.variables, self.query]
+
+        with patch("builtins.input", side_effect=input_values):
+            with self.assertRaises(InvalidQueryException):
+                self.query_preprocessor.get_input()
+
+    def test_raise_invalid_query_exception_when_parent_star_params_are_incorrect(self):
+        self.query = "Select s such that Parent*(s, 'x')"
+
+        input_values = [self.variables, self.query]
+
+        with patch("builtins.input", side_effect=input_values):
+            with self.assertRaises(InvalidQueryException):
+                self.query_preprocessor.get_input()
+
+    def test_raise_invalid_query_exception_when_follows_params_are_incorrect(self):
+        self.query = "Select s such that Follows(s, 'x')"
+
+        input_values = [self.variables, self.query]
+
+        with patch("builtins.input", side_effect=input_values):
+            with self.assertRaises(InvalidQueryException):
+                self.query_preprocessor.get_input()
+
+    def test_raise_invalid_query_exception_when_follows_star_params_are_incorrect(self):
+        self.query = "Select s such that Follows*(s, 'x')"
+
+        input_values = [self.variables, self.query]
+
+        with patch("builtins.input", side_effect=input_values):
+            with self.assertRaises(InvalidQueryException):
+                self.query_preprocessor.get_input()
