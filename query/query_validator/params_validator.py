@@ -1,6 +1,4 @@
 import re
-
-from query.query_validator.exceptions import InvalidQueryException
 from query.utils import INTEGER, IDENT
 
 
