@@ -1,5 +1,19 @@
 import abc
+from enum import Enum
 from ast_interface import ASTInterface
+
+
+class NodeType(Enum):
+    PROCEDURE = 0,
+    STMT_LST = 1,
+    STMT = 2,
+    ASSIGN = 3,
+    VARIABLE = 4,
+    INTEGER = 5,
+    WHILE = 6,
+    IF = 7,
+    ARITHMETIC = 8
+
 
 class AST(ASTInterface):
 
@@ -37,4 +51,7 @@ class AST(ASTInterface):
         raise NotImplementedError
 
     def set_parent(self, node):
+        raise NotImplementedError
+
+    def set_node_value(self, node, value):
         raise NotImplementedError
