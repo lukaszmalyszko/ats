@@ -164,7 +164,25 @@ class TestQueryPreprocessor(TestCase):
                 self.query_preprocessor.get_input()
 
     def test_raise_invalid_query_exception_when_with_has_no_condition(self):
-        self.query = "Select s such that Modifies(s, 'x') with s.a=10"
+        self.query = "Select s such that Modifies(s, 'x') with"
+        input_values = [self.variables, self.query]
+
+        with patch("builtins.input", side_effect=input_values):
+            with self.assertRaises(InvalidQueryException):
+                self.query_preprocessor.get_input()
+
+    def test_raise_invalid_query_exception_when_relation_param_is_incorrect(self):
+        self.query = "Select s such that Modifies(b, 'x')"
+
+        input_values = [self.variables, self.query]
+
+        with patch("builtins.input", side_effect=input_values):
+            with self.assertRaises(InvalidQueryException):
+                self.query_preprocessor.get_input()
+
+    def test_raise_invalid_query_exception_when_select_param_is_incorrect(self):
+        self.query = "Select b such that Modifies(s, 'x')"
+
         input_values = [self.variables, self.query]
 
         with patch("builtins.input", side_effect=input_values):

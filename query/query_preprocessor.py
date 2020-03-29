@@ -13,6 +13,12 @@ class QueryPreprocessor:
 
         return self.variables, self.query
 
+    def check_if_contains_variable(self, var_name):
+        for key in self.entities:
+            if var_name in self.entities[key]:
+                return True
+        return False
+
     def _get_query(self):
         query_input = input("Podaj zapytanie: ")
         query = self.__validate_query(query_input)
@@ -30,6 +36,6 @@ class QueryPreprocessor:
         return variables_input
 
     def __validate_query(self, query_input):
-        query_validator = QueryValidator()
+        query_validator = QueryValidator(self)
         query_validator.validate_query(query_input)
         return query_input
