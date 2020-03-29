@@ -24,15 +24,10 @@ class TestQueryPreprocessor(TestCase):
     def test_returns_get_input_result_ignore_spaces(self):
         self.variables = " stmt  s ,  s1 ;  assign  a ,  a1 ,  a2 ;"
         input_values = [self.variables, self.query]
-        expected_entities = {
-            "stmt": ["s", "s1"],
-            "assign": ["a", "a1", "a2"],
-        }
 
         with patch("builtins.input", side_effect=input_values):
             result = self.query_preprocessor.get_input()
             self.assertEqual(result, (self.variables, self.query))
-            self.assertDictEqual(self.query_preprocessor.entities, expected_entities)
 
     def test_raise_invalid_variables_exception_when_no_semicolon_at_the_end(self):
         input_values = [self.variables[:-1], self.query]
@@ -94,14 +89,15 @@ class TestQueryPreprocessor(TestCase):
     def test_add_variables_to_entities(self):
         self.variables = "stmt s, s1; assign a, a1, a2;"
         input_values = [self.variables, self.query]
-        expected_entities = {
-            "stmt": ["s", "s1"],
-            "assign": ["a", "a1", "a2"],
-        }
+        expected_names = ["s", "s1", "a", "a1", "a2"]
 
         with patch("builtins.input", side_effect=input_values):
             self.query_preprocessor.get_input()
-            self.assertDictEqual(self.query_preprocessor.entities, expected_entities)
+            self.__assert_names(expected_names)
+
+    def __assert_names(self, expected_names):
+        for name in expected_names:
+            self.assertTrue(self.query_preprocessor.check_if_contains_variable(name))
 
     def __then_run_patched_get_input_with_assert_raises_invalid_variables_exception(
         self, input_values

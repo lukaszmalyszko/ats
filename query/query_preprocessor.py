@@ -17,9 +17,10 @@ class QueryPreprocessor:
         return self.variables, self.query
 
     def check_if_contains_variable(self, var_name):
-        for key in self.entities:
-            if var_name in self.entities[key]:
-                return True
+        for var_list in self.entities.values():
+            for var in var_list:
+                if var_name == var.name:
+                    return True
         return False
 
     def _get_query(self):

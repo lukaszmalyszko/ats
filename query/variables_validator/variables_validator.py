@@ -3,17 +3,18 @@ import re
 
 from query.utils import KEY_WORDS, IDENT
 from query.variables_validator.exceptions import InvalidVariablesException
+from query.variables_validator.variables_elements import Stmt, While, Assign, ProgLine, Constant, Variable
 
 
 class VariablesValidator:
-    ENTITY_LIST = [
-        "stmt",
-        "while",
-        "assign",
-        "prog_line",
-        "constant",
-        "variable",
-    ]
+    CONTSTRUCTION_TO_BUILD = {
+        "stmt": Stmt,
+        "while": While,
+        "assign": Assign,
+        "prog_line": ProgLine,
+        "constant": Constant,
+        "variable": Variable,
+    }
 
     def __init__(self):
         self.variables_validated = {}
@@ -43,7 +44,7 @@ class VariablesValidator:
         self.__add_entity()
 
     def __validate_entity(self):
-        if self.entity not in self.ENTITY_LIST:
+        if self.entity not in self.CONTSTRUCTION_TO_BUILD.keys():
             raise InvalidVariablesException("#Niepoprawne polecenie w deklaracji")
 
     def __add_entity(self,):
@@ -71,10 +72,14 @@ class VariablesValidator:
             raise InvalidVariablesException(f"#Brak nazwy w entity")
 
     def __add_variabe_to_entity(self, value):
-        if value in self.variables_validated[self.entity]:
-            raise InvalidVariablesException("#Zmienna o takiej nazwie już istnieje")
-        else:
-            self.variables_validated[self.entity].append(value)
+        values_list = self.variables_validated[self.entity]
+        if values_list:
+            for var in values_list:
+                if value == var.name:
+                    raise InvalidVariablesException("#Zmienna o takiej nazwie już istnieje")
+
+        value_obj = self.CONTSTRUCTION_TO_BUILD[self.entity](value)
+        self.variables_validated[self.entity].append(value_obj)
 
     def __validate_value_name(self, value):
         return value not in KEY_WORDS and re.match(IDENT, value)
