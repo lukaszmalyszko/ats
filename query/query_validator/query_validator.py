@@ -1,5 +1,5 @@
 from query.query_validator.exceptions import InvalidQueryException
-from query.query_validator.query_elements import Select, Element
+from query.query_validator.query_elements import Select
 
 
 class QueryValidator:

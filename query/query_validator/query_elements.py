@@ -106,7 +106,7 @@ class Relation(Element):
         if not relation or not self._is_params_syntax_correct(value):
             raise InvalidQueryException(self.error_message)
         else:
-            model = RELATION_TO_MODEL[relation[0]](self.query_preprocessor)
+            model = RELATION_TO_MODEL[relation[-1]](self.query_preprocessor)
             model.extract_params(value)
             model.validate_params()
 
