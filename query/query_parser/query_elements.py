@@ -11,8 +11,9 @@ from query.query_tree.tree_nodes import (
     ParentStarNode,
     FollowsNode,
     FollowsStarNode,
+    ConditionNode,
 )
-from query.utils import REL_REF
+from query.utils import REL_REF, CONDITION
 
 
 class Element:
@@ -324,18 +325,34 @@ class Condition(Element):
     def __init__(self, query_preprocessor):
         super().__init__(query_preprocessor)
         self.error_message = "# Niepoprawna składnia warunku"
+        self.first_arg = ""
+        self.second_arg = ""
         self.next = Element
 
     def validate(self, value):
-        if not re.match(REL_REF, value):
+        if not re.match(CONDITION, value):
             raise InvalidQueryException(self.error_message)
+        self.extract_args(value)
         # TODO attributes validation
 
     def can_query_be_finished(self):
         return False
 
+    def extract_args(self, value):
+        buffer = ""
+        for char in value:
+            if "=" in char:
+                self.first_arg = buffer.strip(" ")
+                buffer = ""
+                continue
+            buffer = buffer + char
+        self.second_arg = buffer.strip(" ")
+
     def create_node(self, value, tree):
-        # TODO
+        condition_node = ConditionNode()
+        condition_node.first_arg = self.first_arg
+        condition_node.second_arg = self.second_arg
+        tree.add_with(condition_node)
         pass
 
 

@@ -28,3 +28,9 @@ class QueryTree:
 
     def get_such_that_statements(self):
         return self._statements["such_that"]
+
+    def add_with(self, node):
+        self._statements["with"].append(node)
+
+    def get_with_statements(self):
+        return self._statements["with"]
