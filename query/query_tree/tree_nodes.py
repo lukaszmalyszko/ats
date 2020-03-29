@@ -39,11 +39,6 @@ class SelectNode(Node):
         self._variables.append(node)
 
 
-class SuchThatNode(Node):
-    def __init__(self):
-        super().__init__()
-
-
 class RelationNode(Node):
     def __init__(self):
         super().__init__()
@@ -97,16 +92,27 @@ class FollowsStarNode(RelationNode):
         super().__init__()
 
 
-class WithNode(Node):
-    def __init__(self):
-        super().__init__()
-
-
 class ConditionNode(Node):
     def __init__(self):
         super().__init__()
         self._first_attr = None
         self._second_attr = None
+
+    @property
+    def first_attr(self):
+        return self._first_attr
+
+    @first_attr.setter
+    def first_attr(self, node):
+        self._first_attr = node
+
+    @property
+    def second_attr(self):
+        return self._second_attr
+
+    @second_attr.setter
+    def second_attr(self, node):
+        self._second_attr = node
 
 
 class PatternNode(Node):

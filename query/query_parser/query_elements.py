@@ -350,8 +350,8 @@ class Condition(Element):
 
     def create_node(self, value, tree):
         condition_node = ConditionNode()
-        condition_node.first_arg = self.first_arg
-        condition_node.second_arg = self.second_arg
+        condition_node.first_attr = self.first_arg
+        condition_node.second_attr = self.second_arg
         tree.add_with(condition_node)
         pass
 

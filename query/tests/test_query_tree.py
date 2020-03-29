@@ -26,6 +26,8 @@ class TestQueryPreprocessor(TestCase):
             self.query_preprocessor.get_input()
             such_that = self.query_preprocessor.tree.get_such_that_statements()
             self.assertEqual(len(such_that), 1)
+            self.assertEqual(such_that[0].first_arg, "s")
+            self.assertEqual(such_that[0].second_arg, "'x'")
 
     def test_creates_with_node(self):
         self.query = "Select s such that Modifies(s, 'x') with s.stmt# = 10"
@@ -35,3 +37,5 @@ class TestQueryPreprocessor(TestCase):
             self.query_preprocessor.get_input()
             with_stmts = self.query_preprocessor.tree.get_with_statements()
             self.assertEqual(len(with_stmts), 1)
+            self.assertEqual(with_stmts[0].first_attr, "s.stmt#")
+            self.assertEqual(with_stmts[0].second_attr, "10")
