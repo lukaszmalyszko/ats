@@ -1,8 +1,8 @@
 import re
 from abc import abstractmethod
 
-from query.query_validator.exceptions import InvalidQueryException
-from query.query_validator.params_validator import ParamsValidator
+from query.query_parser.exceptions import InvalidQueryException
+from query.query_parser.params_validator import ParamsValidator
 from query.utils import REL_REF
 
 

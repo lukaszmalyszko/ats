@@ -1,4 +1,4 @@
-from query.query_parser import QueryParser
+from query.query_parser.query_parser import QueryParser
 from query.query_tree.query_tree import QueryTree
 from query.query_tree.tree_nodes import Root
 
