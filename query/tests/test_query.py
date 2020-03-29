@@ -21,6 +21,21 @@ class TestQueryPreprocessor(TestCase):
                 self.query_preprocessor.get_input(), (self.variables, self.query)
             )
 
+    def test_returns_get_input_result_ignore_spaces(self):
+        self.variables = " stmt  s ,  s1 ;  assign  a ,  a1 ,  a2 ;"
+        input_values = [self.variables, self.query]
+        expected_entities = {
+            "stmt": ["s", "s1"],
+            "assign": ["a", "a1", "a2"],
+        }
+
+        with patch("builtins.input", side_effect=input_values):
+            result = self.query_preprocessor.get_input()
+            self.assertEqual(
+                result, (self.variables, self.query)
+            )
+            self.assertDictEqual(self.query_preprocessor.entities, expected_entities)
+
     def test_raise_invalid_variables_exception_when_no_semicolon_at_the_end(self):
         input_values = [self.variables[:-1], self.query]
 
