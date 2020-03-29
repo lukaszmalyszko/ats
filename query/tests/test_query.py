@@ -70,6 +70,14 @@ class TestQueryPreprocessor(TestCase):
             input_values
         )
 
+    def test_raise_invalid_variables_exception_when_two_values_with_same_name(self):
+        self.variables = "stmt s, s;"
+        input_values = [self.variables, self.query]
+
+        self.__then_run_patched_get_input_with_assert_raises_invalid_variables_exception(
+            input_values
+        )
+
     def test_add_variables_to_entities(self):
         self.variables = "stmt s, s1; assign a, a1, a2;"
         input_values = [self.variables, self.query]

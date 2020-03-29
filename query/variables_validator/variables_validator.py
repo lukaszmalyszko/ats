@@ -1,6 +1,7 @@
 import re
 
-from query.query_validator.query_elements import IDENT
+
+from query.utils import KEY_WORDS, IDENT
 from query.variables_validator.exceptions import InvalidVariablesException
 
 
@@ -13,8 +14,10 @@ class VariablesValidator:
         "constant",
         "variable",
     ]
-    entity = ""
-    validated_variables = {}
+
+    def __init__(self):
+        self.variables_validated = {}
+        self.entity = ""
 
     def validate_variables(self, variables_input):
         variables = variables_input.split(";")
@@ -25,13 +28,15 @@ class VariablesValidator:
         else:
             raise InvalidVariablesException("#Brak średnika na końcu deklaracji")
 
-        return self.validated_variables
+        return self.variables_validated
 
     def __prepare_and_validate_single_variable(self, variable):
-        values = variable.strip().split(" ")
+        values = variable.strip().split(" ", 1)
         self.entity = values.pop(0)
         self.__prepare_entity()
-        self.__prepare_values(values)
+        self.__validate_entity_name(values)
+
+        self.__prepare_values(values[0])
 
     def __prepare_entity(self):
         self.__validate_entity()
@@ -43,25 +48,20 @@ class VariablesValidator:
 
     def __add_entity(self,):
         try:
-            self.validated_variables[self.entity]
+            self.variables_validated[self.entity]
         except KeyError:
-            self.validated_variables[self.entity] = []
+            self.variables_validated[self.entity] = []
 
     def __prepare_values(self, values):
-        self.__validate_entity_name(values)
-        for i, value in enumerate(values):
-            value = self.__validate_value(i, value, values)
+        values_list = values.split(",")
+        for value in values_list:
+            value = value.strip()
+            value = self.__validate_value(value)
             self.__add_variabe_to_entity(value)
 
-    def __validate_value(self, i, value, values):
-        if "," in value:
-            try:
-                values[i + 1]
-            except IndexError:
-                raise InvalidVariablesException("#Niedozwolona znak")
-        value = value.replace(",", "")
-        if value in self.ENTITY_LIST:
-            raise InvalidVariablesException("#Niedozwolona nazwa zmiennej")
+    def __validate_value(self, value):
+        if "" == value:
+            raise InvalidVariablesException("#Niedozwolona znak")
         if not self.__validate_value_name(value):
             raise InvalidVariablesException("#Niedozwolona nazwa zmiennej")
         return value
@@ -71,7 +71,10 @@ class VariablesValidator:
             raise InvalidVariablesException(f"#Brak nazwy w entity")
 
     def __add_variabe_to_entity(self, value):
-        self.validated_variables[self.entity].append(value)
+        if value in self.variables_validated[self.entity]:
+            raise InvalidVariablesException("#Zmienna o takiej nazwie już istnieje")
+        else:
+            self.variables_validated[self.entity].append(value)
 
     def __validate_value_name(self, value):
-        return re.match(IDENT, value)
+        return value not in KEY_WORDS and re.match(IDENT, value)
