@@ -26,33 +26,6 @@ class Node:
         return self._sibling
 
 
-class Root:
-    def __init__(self):
-        self._select = None
-        self._result = None
-        self._statements = {
-            SuchThatNode: [],
-            WithNode: [],
-            PatternNode: [],
-        }
-
-    @property
-    def select(self):
-        return self._select
-
-    @select.setter
-    def select(self, node):
-        self._select = node
-
-    @property
-    def result(self):
-        return self._result
-
-    @result.setter
-    def result(self, node):
-        self._result = node
-
-
 class SelectNode(Node):
     def __init__(self):
         super().__init__()
@@ -76,6 +49,52 @@ class RelationNode(Node):
         super().__init__()
         self._first_arg = None
         self._second_arg = None
+
+    @property
+    def first_arg(self):
+        return self._first_arg
+
+    @first_arg.setter
+    def first_arg(self, node):
+        self._first_arg = node
+
+    @property
+    def second_arg(self):
+        return self._second_arg
+
+    @second_arg.setter
+    def second_arg(self, node):
+        self._second_arg = node
+
+
+class ModifiesNode(RelationNode):
+    def __init__(self):
+        super().__init__()
+
+
+class UsesNode(RelationNode):
+    def __init__(self):
+        super().__init__()
+
+
+class ParentNode(RelationNode):
+    def __init__(self):
+        super().__init__()
+
+
+class ParentStarNode(RelationNode):
+    def __init__(self):
+        super().__init__()
+
+
+class FollowsNode(RelationNode):
+    def __init__(self):
+        super().__init__()
+
+
+class FollowsStarNode(RelationNode):
+    def __init__(self):
+        super().__init__()
 
 
 class WithNode(Node):

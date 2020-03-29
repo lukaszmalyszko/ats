@@ -3,7 +3,15 @@ from abc import abstractmethod
 
 from query.query_parser.exceptions import InvalidQueryException
 from query.query_parser.params_validator import ParamsValidator
-from query.query_tree.tree_nodes import SelectNode
+from query.query_tree.tree_nodes import (
+    SelectNode,
+    ModifiesNode,
+    UsesNode,
+    ParentNode,
+    ParentStarNode,
+    FollowsNode,
+    FollowsStarNode,
+)
 from query.utils import REL_REF
 
 
@@ -162,8 +170,10 @@ class Relation(Element):
         return re.match(REL_REF, value)
 
     def create_node(self, value, tree):
-        # TODO
-        pass
+        relation = list(filter(value.startswith, RELATION_TO_MODEL.keys()))
+        model = RELATION_TO_MODEL[relation[-1]](self.query_preprocessor)
+        model.extract_params(value)
+        model.create_node(value, tree)
 
 
 class Modifies(Relation):
@@ -183,6 +193,12 @@ class Modifies(Relation):
         if not is_first_param_correct or not is_second_param_correct:
             raise InvalidQueryException("# Niepoprawne parametry w Modifies")
 
+    def create_node(self, value, tree):
+        modifies_node = ModifiesNode()
+        modifies_node.first_arg = self.first_param
+        modifies_node.second_arg = self.second_param
+        tree.add_such_that(modifies_node)
+
 
 class Uses(Relation):
     def __init__(self, query_preprocessor):
@@ -200,6 +216,12 @@ class Uses(Relation):
         )
         if not is_first_param_correct or not is_second_param_correct:
             raise InvalidQueryException("# Niepoprawne parametry w Uses")
+
+    def create_node(self, value, tree):
+        uses_node = UsesNode()
+        uses_node.first_arg = self.first_param
+        uses_node.second_arg = self.second_param
+        tree.add_such_that(uses_node)
 
 
 class Parent(Relation):
@@ -219,6 +241,12 @@ class Parent(Relation):
         if not is_first_param_correct or not is_second_param_correct:
             raise InvalidQueryException("# Niepoprawne parametry w Parent")
 
+    def create_node(self, value, tree):
+        parent_node = ParentNode()
+        parent_node.first_arg = self.first_param
+        parent_node.second_arg = self.second_param
+        tree.add_such_that(parent_node)
+
 
 class ParentStar(Relation):
     def __init__(self, query_preprocessor):
@@ -236,6 +264,12 @@ class ParentStar(Relation):
         )
         if not is_first_param_correct or not is_second_param_correct:
             raise InvalidQueryException("# Niepoprawne parametry w Parent*")
+
+    def create_node(self, value, tree):
+        parent_star_node = ParentStarNode()
+        parent_star_node.first_arg = self.first_param
+        parent_star_node.second_arg = self.second_param
+        tree.add_such_that(parent_star_node)
 
 
 class Follows(Relation):
@@ -255,6 +289,12 @@ class Follows(Relation):
         if not is_first_param_correct or not is_second_param_correct:
             raise InvalidQueryException("# Niepoprawne parametry w Follows")
 
+    def create_node(self, value, tree):
+        follows_node = FollowsNode()
+        follows_node.first_arg = self.first_param
+        follows_node.second_arg = self.second_param
+        tree.add_such_that(follows_node)
+
 
 class FollowsStar(Relation):
     def __init__(self, query_preprocessor):
@@ -272,6 +312,12 @@ class FollowsStar(Relation):
         )
         if not is_first_param_correct or not is_second_param_correct:
             raise InvalidQueryException("# Niepoprawne parametry w Follows*")
+
+    def create_node(self, value, tree):
+        follows_star_node = FollowsStarNode()
+        follows_star_node.first_arg = self.first_param
+        follows_star_node.second_arg = self.second_param
+        tree.add_such_that(follows_star_node)
 
 
 class Condition(Element):
