@@ -1,7 +1,7 @@
 import re
 
-from query.query_validator.query_elements import KEY_WORDS, IDENT
 from query.query_validator.query_validator import QueryValidator
+from query.utils import KEY_WORDS, IDENT
 
 
 class QueryPreprocessor:
@@ -48,9 +48,9 @@ class QueryPreprocessor:
         if len(values) == 0:
             raise InvalidVariablesException(f"#Brak nazwy w entity")
         for i, value in enumerate(values):
-            if ',' in value:
+            if "," in value:
                 try:
-                    values[i+1]
+                    values[i + 1]
                 except IndexError:
                     raise InvalidVariablesException("#Niedozwolona znak")
             value = value.replace(",", "")
