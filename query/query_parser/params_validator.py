@@ -15,7 +15,7 @@ class ParamsValidator:
             # TODO check if program contains line with such number
             return True
         if (
-            not query_preprocessor.declarations.check_if_contains_variable(ref)
+            not query_preprocessor.declarations.check_if_contains_variable(ref, "stmt")
             and ref is not "_"
         ):
             return False
@@ -27,7 +27,7 @@ class ParamsValidator:
             # TODO check if program contains such variable
             return True
         if (
-            not query_preprocessor.declarations.check_if_contains_variable(ref)
+            not query_preprocessor.declarations.check_if_contains_variable(ref, "ref")
             and ref is not "_"
         ):
             return False
