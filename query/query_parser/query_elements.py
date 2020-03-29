@@ -91,7 +91,6 @@ class Such(Element):
         return False
 
     def create_node(self, value, tree):
-        # TODO
         pass
 
 
@@ -110,7 +109,6 @@ class That(Element):
         return False
 
     def create_node(self, value, tree):
-        # TODO
         pass
 
 

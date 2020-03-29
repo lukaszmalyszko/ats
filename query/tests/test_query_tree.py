@@ -15,7 +15,6 @@ class TestQueryPreprocessor(TestCase):
 
         with patch("builtins.input", side_effect=input_values):
             self.query_preprocessor.get_input()
-            self.query_preprocessor.build_tree()
             self.assertTrue(self.query_preprocessor.tree.root)
 
     def test_creates_select_node(self):
@@ -23,5 +22,4 @@ class TestQueryPreprocessor(TestCase):
 
         with patch("builtins.input", side_effect=input_values):
             self.query_preprocessor.get_input()
-            self.query_preprocessor.build_tree()
             self.assertTrue(self.query_preprocessor.tree.root.select)

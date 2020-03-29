@@ -1,5 +1,4 @@
 from query.query_parser.query_builder import QueryBuilder
-from query.query_parser.query_validator import QueryValidator
 from query.declarations_parser.symbol_container import SymbolContainer
 from query.declarations_parser.declarations_validator import DeclarationsValidator
 
@@ -17,13 +16,9 @@ class QueryPreprocessor:
 
         return self.declarations, self.query
 
-    def build_tree(self):
-        query_builder = QueryBuilder(self)
-        self.tree = query_builder.build_query(self.query)
-
     def _get_query(self):
         query_input = input("Podaj zapytanie: ")
-        query = self.__validate_query(query_input)
+        query = self.__build_query(query_input)
         return query
 
     def _get_declarations(self):
@@ -39,7 +34,7 @@ class QueryPreprocessor:
 
         return declarations_input
 
-    def __validate_query(self, query_input):
-        query_validator = QueryValidator(self)
-        query_validator.validate_query(query_input)
+    def __build_query(self, query_input):
+        query_builder = QueryBuilder(self)
+        self.tree = query_builder.build_query(query_input)
         return query_input
