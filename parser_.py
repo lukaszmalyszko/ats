@@ -2,7 +2,7 @@ import abc
 from enum import Enum
 import re
 from parser_interface import ParserInterface
-from ast import AST
+from ast import AST, NodeType
 
 class TokenType(Enum):
     NAME = 1
@@ -17,7 +17,9 @@ class Parser(ParserInterface):
 
     def parse(self, text):
         self.__text = text
-        self.__procedure()
+        root = self.__procedure()
+        self.__ast.set_root(root)
+        return self.__ast
 
 
     def __skip_whitespace(self):
@@ -63,76 +65,122 @@ class Parser(ParserInterface):
             print("Matched: " + m.group(0))
             return m.group(0)
         else:
-            raise ("Parser error")
+            raise Exception("Parser error")
 
 
     def __procedure(self):
+        procedure_node = self.__ast.create_node(NodeType.PROCEDURE)
         self.__match_text('procedure')
-        self.__match_token(TokenType.NAME)
+        name = self.__match_token(TokenType.NAME)
+        self.__ast.set_node_value(procedure_node, name)
         self.__match_text('{')
-        self.__stmt_lst()
-        self.__match_text('}') 
+        stmt_lst_node = self.__stmt_lst()
+        self.__match_text('}')
+        self.__ast.add_child(procedure_node, stmt_lst_node, 0)
+        return procedure_node
 
 
     def __stmt_lst(self):
-        self.__stmt()
+        stmt_lst_node = self.__ast.create_node(NodeType.STMT_LST)
+        stmt_node = self.__stmt()
+        next_child = 0
+        self.__ast.add_child(stmt_lst_node, stmt_node, next_child)
         next_token = self.__get_next_token()
-        if next_token != '}':
-            self.__stmt_lst()
+        while next_token != '}':
+            next_child = next_child + 1
+            stmt_node = self.__stmt()
+            self.__ast.add_child(stmt_lst_node, stmt_node, next_child)
+            next_token = self.__get_next_token()
+        return stmt_lst_node
 
 
     def __stmt(self):
         next_token = self.__get_next_token()
         if next_token == 'while':
-            self.__while()
+            node = self.__while()
         elif next_token == 'if':
-            self.__if()
+            node = self.__if()
         else:
-            self.__assign()
+            node = self.__assign()
+        
+        return node
 
 
     def __assign(self):
-        self.__match_token(TokenType.NAME)
+        assign_node = self.__ast.create_node(NodeType.ASSIGN)
+        var_name = self.__match_token(TokenType.NAME)
+        var_node = self.__ast.create_node(NodeType.VARIABLE)
+        self.__ast.set_node_value(var_node, var_name)
+        self.__ast.add_child(assign_node, var_node, 0)
         self.__match_text('=')
-        self.__expr()
+        expr_node = self.__expr()
+        self.__ast.add_child(assign_node, expr_node, 1)
         self.__match_text(';')
+        return assign_node
 
 
     def __while(self):
+        while_node = self.__ast.create_node(NodeType.WHILE)
         self.__match_text('while')
-        self.__match_token(TokenType.NAME)
+        var_name = self.__match_token(TokenType.NAME)
+        var_node = self.__ast.create_node(NodeType.VARIABLE)
+        self.__ast.set_node_value(var_node, var_name)
+        self.__ast.add_child(while_node, var_node, 0)
         self.__match_text('{')
-        self.__stmt_lst()
+        stmt_lst_node = self.__stmt_lst()
         self.__match_text('}')
+        self.__ast.add_child(while_node, stmt_lst_node, 1)
+        return while_node
 
 
     def __if(self):
+        if_node = self.__ast.create_node(NodeType.IF)
         self.__match_text('if')
-        self.__match_token(TokenType.NAME)
+        var_name = self.__match_token(TokenType.NAME)
+        var_node = self.__ast.create_node(NodeType.VARIABLE)
+        self.__ast.set_node_value(var_node, var_name)
+        self.__ast.add_child(if_node, var_node, 0)
         self.__match_text('{')
-        self.__stmt_lst()
+        stmt_lst_node_1 = self.__stmt_lst()
+        self.__ast.add_child(if_node, stmt_lst_node_1, 1)
         self.__match_text('}')
         self.__match_text('else')
         self.__match_text('{')
         self.__stmt_lst()
+        stmt_lst_node_2 = self.__stmt_lst()
+        self.__ast.add_child(if_node, stmt_lst_node_2, 2)
         self.__match_text('}')
+        return if_node
 
 
     def __expr(self):
         next_token = self.__get_next_token()
+        node1 = None
         if next_token.isnumeric():
-            self.__match_token(TokenType.INTEGER)
+            value = self.__match_token(TokenType.INTEGER)
+            node1 = self.__ast.create_node(NodeType.INTEGER)
+            self.__ast.set_node_value(node1, value)
         elif next_token.isalnum():
-            self.__match_token(TokenType.NAME)
+            name = self.__match_token(TokenType.NAME)
+            node1 = self.__ast.create_node(NodeType.VARIABLE)
+            self.__ast.set_node_value(node1, name)
 
         next_token = self.__get_next_token()
         if next_token == '+':
             self.__match_text('+')
+            op_node = self.__ast.create_node(NodeType.ARITHMETIC)
+            self.__ast.set_node_value(op_node, '+')
+            self.__ast.add_child(op_node, node1, 0)
         elif next_token == '-':
             self.__match_text('-')
+            op_node = self.__ast.create_node(NodeType.ARITHMETIC)
+            self.__ast.set_node_value(op_node, '-')
+            self.__ast.add_child(op_node, node1, 0)
         elif next_token == '*':
-            self.__match_text('*')
+            raise NotImplementedError
         elif next_token == ';':
-            return
+            return node1
         
-        self.__expr()
+        node2 = self.__expr()
+        self.__ast.add_child(op_node, node2, 1)
+        return op_node
