@@ -1,8 +1,10 @@
 from unittest import TestCase
 from unittest.mock import patch
 
-from query.query_preprocessor import QueryPreprocessor, InvalidVariablesException
+
+from query.query_preprocessor import QueryPreprocessor
 from query.query_validator.exceptions import InvalidQueryException
+from query.variables_validator.exceptions import InvalidVariablesException
 
 
 class TestQueryPreprocessor(TestCase):
@@ -80,7 +82,9 @@ class TestQueryPreprocessor(TestCase):
             self.query_preprocessor.get_input()
             self.assertDictEqual(self.query_preprocessor.entities, expected_entities)
 
-    def __then_run_patched_get_input_with_assert_raises_invalid_variables_exception(self, input_values):
+    def __then_run_patched_get_input_with_assert_raises_invalid_variables_exception(
+        self, input_values
+    ):
         with patch("builtins.input", side_effect=input_values):
             with self.assertRaises(InvalidVariablesException):
                 self.query_preprocessor.get_input()
