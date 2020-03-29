@@ -1,7 +1,7 @@
 import abc
 
 
-class ATSInterface(metaclass=abc.ABCMeta):
+class ASTInterface(metaclass=abc.ABCMeta):
 
     @classmethod
     def __subclasshook__(cls, subclass):

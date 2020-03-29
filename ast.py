@@ -1,7 +1,7 @@
 import abc
-from ats_tree import ATSInterface
+from ast_interface import ASTInterface
 
-class AST(ATSInterface):
+class AST(ASTInterface):
 
     def get_child(self, parent, position):
         raise NotImplementedError
