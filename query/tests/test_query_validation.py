@@ -164,7 +164,9 @@ class TestQueryValidation(TestCase):
             with self.assertRaises(InvalidQueryException):
                 self.query_preprocessor.get_input()
 
-    def test_raise_invalid_query_exception_when_relation_has_wrong_type_of_argument(self):
+    def test_raise_invalid_query_exception_when_relation_has_wrong_type_of_argument(
+        self,
+    ):
         self.query = "Select s such that Modifies(s, s1)"
         input_values = [self.variables, self.query]
 
