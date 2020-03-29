@@ -3,7 +3,7 @@ from abc import abstractmethod
 
 from query.query_validator.exceptions import InvalidQueryException
 from query.query_validator.params_validator import ParamsValidator
-from query.utils import REL_REF, IDENT, KEY_WORDS
+from query.utils import REL_REF
 
 
 class Element:
@@ -255,6 +255,11 @@ class Condition(Element):
         super().__init__(query_preprocessor)
         self.error_message = "# Niepoprawna składnia warunku"
         self.next = Element
+
+    def validate(self, value):
+        if not re.match(REL_REF, value):
+            raise InvalidQueryException(self.error_message)
+        # TODO attributes validation
 
     def can_query_be_finished(self):
         return False

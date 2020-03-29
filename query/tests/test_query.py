@@ -250,3 +250,20 @@ class TestQueryPreprocessor(TestCase):
             self.assertEqual(
                 self.query_preprocessor.get_input(), (self.variables, self.query)
             )
+
+    def test_raise_invalid_query_exception_when_condition_is_incorrect(self):
+        self.query = "Select s such that Modifies(s, 'x') with s.a"
+        input_values = [self.variables, self.query]
+
+        with patch("builtins.input", side_effect=input_values):
+            with self.assertRaises(InvalidQueryException):
+                self.query_preprocessor.get_input()
+
+    def test_returns_get_input_result_with_multiple_spaces(self):
+        self.query = "Select   s  such    that  Modifies  ( s,   'x' )"
+        input_values = [self.variables, self.query]
+
+        with patch("builtins.input", side_effect=input_values):
+            self.assertEqual(
+                self.query_preprocessor.get_input(), (self.variables, self.query)
+            )
