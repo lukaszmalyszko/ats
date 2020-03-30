@@ -187,7 +187,7 @@ class Parser(ParserInterface):
         while token == '*':
             op = token
             self.__match_text(op)
-            term1 = self.__term()
+            term1 = self.__factor()
             if op == '*':
                 op_node = self.__ast.create_node(NodeType.ARITHMETIC)
                 self.__ast.set_node_value(op_node, op)
