@@ -27,6 +27,12 @@ class ASTInterface(metaclass=abc.ABCMeta):
                 callable(subclass.set_root) or
                 hasattr(subclass, 'set_parent') and
                 callable(subclass.set_parent) or
+                hasattr(subclass, 'set_node_value') and
+                callable(subclass.set_node_value) or
+                hasattr(subclass, 'get_node_value') and
+                callable(subclass.get_node_value) or
+                hasattr(subclass, 'get_children') and
+                callable(subclass.get_children) or
                 NotImplemented)
 
     @abc.abstractmethod
@@ -75,4 +81,16 @@ class ASTInterface(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def set_parent(self, node):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def set_node_value(self, node, value):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_node_value(self, node):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_children(self, node):
         raise NotImplementedError

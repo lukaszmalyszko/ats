@@ -9,6 +9,7 @@ else:
         program = f.read()
         print(program)
         p = Parser()
-        p.parse(program)
+        ast = p.parse(program)
+
     except IOError:
         print("Couldn't read file: " + sys.argv[1])
