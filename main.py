@@ -11,6 +11,7 @@ else:
         print(program)
         p = Parser()
         ast = p.parse(program)
+
         pkb = PKB(ast)
 
     except IOError:
