@@ -7,12 +7,81 @@ from typing import Optional
 from typing import Union
 import re
 from parser_interface import ParserInterface
-from ast import AST, NodeType
+from ast import AST
 
 
 class TokenType(Enum):
     NAME = auto()
     INTEGER = auto()
+
+
+class Procedure(NamedTuple):
+    proc_name: str
+    line: int
+    stmt_lst: 'List[Statement]'
+
+
+class StmtCall(NamedTuple):
+    proc_name: str
+    line: int
+
+
+class StmtWhile(NamedTuple):
+    var_name: str
+    line: int
+    stmt_lst: 'List[Statement]'
+
+
+class StmtIf(NamedTuple):
+    var_name: str
+    line: int
+    then: 'List[Statement]'
+    else_: 'Optional[List[Statement]]'
+
+
+class StmtAssign(NamedTuple):
+    var_name: str
+    line: int
+    expr: 'Expr'
+
+
+Statement = Union[StmtCall, StmtIf, StmtWhile, StmtAssign]
+
+
+class Var(NamedTuple):
+    var_name: str
+
+
+class Const(NamedTuple):
+    const_value: int
+
+
+class Parentheised(NamedTuple):
+    expr: 'Expr'
+
+
+Factor = Union[Var, Const, Parentheised]
+
+
+class Multiply(NamedTuple):
+    expr: 'Expr'
+    term: 'Term'
+
+
+Term = Union[Multiply, Factor]
+
+
+class Plus(NamedTuple):
+    expr: 'Expr'
+    term: 'Term'
+
+
+class Minus(NamedTuple):
+    expr: 'Expr'
+    term: 'Term'
+
+
+Expr = Union[Plus, Minus, Term]
 
 
 class Parser(ParserInterface):
@@ -23,9 +92,8 @@ class Parser(ParserInterface):
     def parse(self, text):
         self.__text = text
         self.__line = 1
-        root = self.__procedure()
-        self.__ast.set_root(root)
-        return self.__ast
+        p = self.__procedure()
+        return p
 
     def __skip_whitespace(self):
         while (self.__text[self.__current_index].isspace() and
@@ -44,6 +112,10 @@ class Parser(ParserInterface):
             return m.group(0)
         else:
             raise Exception("Parser error")
+
+    def __get_curr_token(self):
+        self.__skip_whitespace()
+        return self.__text[self.__current_index]
 
     def __match_text(self, text_to_match):
         self.__skip_whitespace()
@@ -69,98 +141,70 @@ class Parser(ParserInterface):
             print("Matched: " + m.group(0))
             return m.group(0)
         else:
-            raise Exception("Parser error")
+            raise ("Parser error")
 
-    def __procedure(self):
-        procedure_node = self.__ast.create_node(NodeType.PROCEDURE)
+    def __procedure(self) -> Procedure:
         self.__match_text('procedure')
-        name = self.__match_token(TokenType.NAME)
-        self.__ast.set_node_value(procedure_node, name)
+        proc_name = self.__match_token(TokenType.NAME)
         self.__match_text('{')
-        stmt_lst_node = self.__stmt_lst()
+        stmt_lst = self.__stmt_lst()
         self.__match_text('}')
-        self.__ast.add_child(procedure_node, stmt_lst_node, 0)
-        return procedure_node
+        return Procedure(proc_name, self.__line, stmt_lst)
 
-    def __stmt_lst(self):
-        stmt_lst_node = self.__ast.create_node(NodeType.STMT_LST)
-        stmt_node = self.__stmt()
-        next_child = 0
-        self.__ast.add_child(stmt_lst_node, stmt_node, next_child)
+    def __stmt_lst(self) -> List[Statement]:
+        stmt_lst: List[Statement] = []
+        stmt_lst.append(self.__stmt())
         next_token = self.__get_next_token()
         while next_token != '}':
-            next_child = next_child + 1
-            stmt_node = self.__stmt()
-            self.__ast.add_child(stmt_lst_node, stmt_node, next_child)
+            stmt_lst.append(self.__stmt())
             next_token = self.__get_next_token()
-        return stmt_lst_node
+        return stmt_lst
 
-    def __stmt(self):
+    def __stmt(self) -> Statement:
         next_token = self.__get_next_token()
         if next_token == 'while':
-            node = self.__while()
+            return self.__while()
         elif next_token == 'if':
-            node = self.__if()
+            return self.__if()
         elif next_token == 'call':
-            node = self.__call()
+            return self.__call()
         else:
-            node = self.__assign()
+            return self.__assign()
 
-        return node
-
-    def __assign(self):
-        assign_node = self.__ast.create_node(NodeType.ASSIGN)
+    def __assign(self) -> StmtAssign:
         var_name = self.__match_token(TokenType.NAME)
-        var_node = self.__ast.create_node(NodeType.VARIABLE)
-        self.__ast.set_node_value(var_node, var_name)
-        self.__ast.add_child(assign_node, var_node, 0)
         self.__match_text('=')
-        expr_node = self.__expr()
-        self.__ast.add_child(assign_node, expr_node, 1)
+        expr = self.__expr()
         self.__match_text(';')
-        return assign_node
+        return StmtAssign(var_name, self.__line, expr)
 
-    def __while(self):
-        while_node = self.__ast.create_node(NodeType.WHILE)
+    def __while(self) -> StmtWhile:
         self.__match_text('while')
         var_name = self.__match_token(TokenType.NAME)
-        var_node = self.__ast.create_node(NodeType.VARIABLE)
-        self.__ast.set_node_value(var_node, var_name)
-        self.__ast.add_child(while_node, var_node, 0)
         self.__match_text('{')
-        stmt_lst_node = self.__stmt_lst()
+        stmt_lst = self.__stmt_lst()
         self.__match_text('}')
-        self.__ast.add_child(while_node, stmt_lst_node, 1)
-        return while_node
+        return StmtWhile(var_name, self.__line, stmt_lst)
 
-    def __if(self):
-        if_node = self.__ast.create_node(NodeType.IF)
+    def __if(self) -> StmtIf:
         self.__match_text('if')
         var_name = self.__match_token(TokenType.NAME)
-        var_node = self.__ast.create_node(NodeType.VARIABLE)
-        self.__ast.set_node_value(var_node, var_name)
-        self.__ast.add_child(if_node, var_node, 0)
-        self.__match_text('then')
-        self.__match_text('{')
-        stmt_lst_node_1 = self.__stmt_lst()
-        self.__ast.add_child(if_node, stmt_lst_node_1, 1)
+        self.__match_text('then {')
+        then = self.__stmt_lst()
         self.__match_text('}')
         self.__match_text('else')
         self.__match_text('{')
-        stmt_lst_node_2 = self.__stmt_lst()
-        self.__ast.add_child(if_node, stmt_lst_node_2, 2)
+        else_ = self.__stmt_lst()
         self.__match_text('}')
-        return if_node
+        return StmtIf(var_name, self.__line, then, else_)
 
-    def __call(self):
-        call_node = self.__ast.create_node(NodeType.CALL)
+    def __call(self) -> StmtCall:
         self.__match_text('call')
         proc_name = self.__match_token(TokenType.NAME)
         self.__match_text(';')
-        self.__ast.set_node_value(call_node, proc_name)
-        return call_node
+        return StmtCall(proc_name, 1)
 
-    def __expr(self):
+    def __expr(self) -> Expr:
         expr = self.__term()
         token = self.__get_next_token()
         while token == '+' or token == '-':
@@ -168,59 +212,38 @@ class Parser(ParserInterface):
             self.__match_text(token)
             expr1 = self.__term()
             if op == '-':
-                op_node = self.__ast.create_node(NodeType.ARITHMETIC)
-                self.__ast.set_node_value(op_node, op)
-                self.__ast.add_child(op_node, expr, 0)
-                self.__ast.add_child(op_node, expr1, 1)
-                expr = op_node
+                expr =  Minus(expr, expr1)
             elif op == '+':
-                op_node = self.__ast.create_node(NodeType.ARITHMETIC)
-                self.__ast.set_node_value(op_node, op)
-                self.__ast.add_child(op_node, expr, 0)
-                self.__ast.add_child(op_node, expr1, 1)
-                expr = op_node
+                expr = Plus(expr, expr1)
             token = self.__get_next_token()
         return expr
 
-    def __term(self):
+    def __term(self) -> Term:
         term = self.__factor()
         token = self.__get_next_token()
         while token == '*':
             op = token
             self.__match_text(op)
-            term1 = self.__factor()
+            term1 = self.__term()
             if op == '*':
-                op_node = self.__ast.create_node(NodeType.ARITHMETIC)
-                self.__ast.set_node_value(op_node, op)
-                self.__ast.add_child(op_node, term, 0)
-                self.__ast.add_child(op_node, term1, 1)
-                term = op_node
+                term = Multiply(term, term1)
             token = self.__get_next_token()
         return term
 
-    def __factor(self):
+    def __factor(self) -> Factor:
         next_token = self.__get_next_token()
         if next_token.isnumeric():
-            value = self.__match_token(TokenType.INTEGER)
-            node = self.__ast.create_node(NodeType.INTEGER)
-            self.__ast.set_node_value(node, value)
+            val = self.__match_token(TokenType.INTEGER)
+            return Const(val)
         elif next_token.isalnum():
-            name = self.__match_token(TokenType.NAME)
-            node = self.__ast.create_node(NodeType.VARIABLE)
-            self.__ast.set_node_value(node, name)
+            val = self.__match_token(TokenType.NAME)
+            return Var(val)
         elif next_token == '(':
             self.__match_text('(')
-            node = self.__expr()
+            expr = self.__expr()
             self.__match_text(')')
+            return Parentheised(expr)
         elif next_token == '-':
             self.__match_text('-')
             term1 = self.__term()
-
-            emptyNode = self.__ast.create_node(NodeType.INTEGER)
-            self.__ast.set_node_value(emptyNode, 0)
-
-            node = self.__ast.create_node(NodeType.ARITHMETIC)
-            self.__ast.set_node_value(node, next_token)
-            self.__ast.add_child(node, emptyNode, 0)
-            self.__ast.add_child(node, term1, 1)
-        return node
+            return Minus(Const(0), term1)
