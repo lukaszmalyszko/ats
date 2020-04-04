@@ -180,14 +180,16 @@ class Parser(ParserInterface):
 
     def __while(self) -> StmtWhile:
         self.__match_text('while')
+        line = self.__line
         var_name = self.__match_token(TokenType.NAME)
         self.__match_text('{')
         stmt_lst = self.__stmt_lst()
         self.__match_text('}')
-        return StmtWhile(var_name, self.__line, stmt_lst)
+        return StmtWhile(var_name, line, stmt_lst)
 
     def __if(self) -> StmtIf:
         self.__match_text('if')
+        line = self.__line
         var_name = self.__match_token(TokenType.NAME)
         self.__match_text('then {')
         then = self.__stmt_lst()
@@ -196,13 +198,14 @@ class Parser(ParserInterface):
         self.__match_text('{')
         else_ = self.__stmt_lst()
         self.__match_text('}')
-        return StmtIf(var_name, self.__line, then, else_)
+        return StmtIf(var_name, line, then, else_)
 
     def __call(self) -> StmtCall:
         self.__match_text('call')
+        line = self.__line
         proc_name = self.__match_token(TokenType.NAME)
         self.__match_text(';')
-        return StmtCall(proc_name, 1)
+        return StmtCall(proc_name, line)
 
     def __expr(self) -> Expr:
         expr = self.__term()
