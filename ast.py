@@ -20,6 +20,7 @@ class Node():
 
     def __init__(self, node_type):
         self.__type = node_type
+        self.__line = None
         self.__value = None
         self.__parent = None
         self.__children = []
@@ -31,7 +32,13 @@ class Node():
         self.__value = value
 
     def get_value(self):
-            return self.__value
+        return self.__value
+
+    def set_line(self, line):
+        self.__line = line
+
+    def get_line(self):
+        return self.__line
 
     def set_parent(self, parent):
         self.__parent = parent
@@ -102,3 +109,9 @@ class AST(ASTInterface):
 
     def get_children(self, node):
         return node.get_children()
+
+    def set_node_line(self, node, line):
+        node.set_line(line)
+
+    def get_node_line(self, node):
+        return node.get_line
