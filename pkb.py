@@ -24,6 +24,21 @@ class PKB:
 
         self._traverse(ast_tree)
 
+    def isParent(self, parent, child):
+        return self._parent_map.get(child) == parent
+
+    def isFollowing(self, curr, prev):
+        return self._follows_map.get(curr) == prev
+
+    def isUsing(self, variable, line):
+        return variable in self._parent_map.get(line)
+
+    def isModifing(self, variable, line):
+        return line in self._modifies_map.get(variable)
+
+    # def isCalling(self, line, proc):
+    #     return False;
+
     def _traverse(self, ast):
         for procedure in ast:
             self.__create_node(procedure)
