@@ -3,7 +3,7 @@ from query.query_preprocessor import QueryPreprocessor
 
 class QueryEvaluator:
     def __init__(self, pkb):
-        self.preprocessor = QueryPreprocessor()
+        self.preprocessor = QueryPreprocessor(pkb)
         self.pkb = pkb
 
     def load(self):

@@ -13,10 +13,13 @@ class ParamsValidator:
         return variable
 
     @staticmethod
-    def get_statement_ref(ref, query_preprocessor):
+    def get_statement_ref(ref, query_preprocessor, pkb):
         if re.match(INTEGER, ref):
-            # TODO check if program contains line with such number
-            raise NotImplementedError
+            if (
+                int(ref) >= pkb._PKB__index
+            ):  # TODO do poprawy przy dostepie do dlugosci programu
+                raise InvalidQueryParamException("# Program jest za krotki")
+            return int(ref)
         if ref is "_":
             return "_"
         stmt_ref = query_preprocessor.symbols.get_symbol(ref)
@@ -38,7 +41,7 @@ class ParamsValidator:
 
     @staticmethod
     def get_condition_variable(ref, query_preprocessor):
-        if re.match(f"({IDENT}[.\"][a-zA-Z#]*)", ref):
+        if re.match(f'({IDENT}[."][a-zA-Z#]*)', ref):
             var, attr_name = ref.split(".")
             entity_ref = query_preprocessor.symbols.get_symbol(var)
             if not entity_ref:
@@ -51,4 +54,3 @@ class ParamsValidator:
         if re.match(f"(['\"]{IDENT}['\"])", ref):
             return ref.strip("'")
         return ref
-

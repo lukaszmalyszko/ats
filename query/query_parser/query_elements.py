@@ -19,6 +19,7 @@ from query.utils import REL_REF, CONDITION
 class Element:
     def __init__(self, query_preprocessor):
         self.query_preprocessor = query_preprocessor
+        self.pkb = query_preprocessor.pkb
         self.value = []
         self.error_message = "# Błąd w zapytaniu"
         self.next = Element
@@ -187,7 +188,7 @@ class Modifies(Relation):
     def validate_params(self):
         # Modifies(stmtRef, entRef)
         self.first_param = ParamsValidator.get_statement_ref(
-            self.first_param, self.query_preprocessor
+            self.first_param, self.query_preprocessor, self.pkb
         )
         self.second_param = ParamsValidator.get_entity_ref(
             self.second_param, self.query_preprocessor
@@ -209,7 +210,7 @@ class Uses(Relation):
     def validate_params(self):
         # Uses(stmtRef, entRef)
         self.first_param = ParamsValidator.get_statement_ref(
-            self.first_param, self.query_preprocessor
+            self.first_param, self.query_preprocessor, self.pkb
         )
         self.second_param = ParamsValidator.get_entity_ref(
             self.second_param, self.query_preprocessor
@@ -231,10 +232,10 @@ class Parent(Relation):
     def validate_params(self):
         # Parent(stmtRef, stmtRef)
         self.first_param = ParamsValidator.get_statement_ref(
-            self.first_param, self.query_preprocessor
+            self.first_param, self.query_preprocessor, self.pkb
         )
         self.second_param = ParamsValidator.get_statement_ref(
-            self.second_param, self.query_preprocessor
+            self.second_param, self.query_preprocessor, self.pkb
         )
 
     def create_node(self, value, tree):
@@ -253,10 +254,10 @@ class ParentStar(Relation):
     def validate_params(self):
         # Parent*(stmtRef, stmtRef)
         self.first_param = ParamsValidator.get_statement_ref(
-            self.first_param, self.query_preprocessor
+            self.first_param, self.query_preprocessor, self.pkb
         )
         self.second_param = ParamsValidator.get_statement_ref(
-            self.second_param, self.query_preprocessor
+            self.second_param, self.query_preprocessor, self.pkb
         )
 
     def create_node(self, value, tree):
@@ -275,10 +276,10 @@ class Follows(Relation):
     def validate_params(self):
         # Follows(stmtRef, stmtRef)
         self.first_param = ParamsValidator.get_statement_ref(
-            self.first_param, self.query_preprocessor
+            self.first_param, self.query_preprocessor, self.pkb
         )
         self.second_param = ParamsValidator.get_statement_ref(
-            self.second_param, self.query_preprocessor
+            self.second_param, self.query_preprocessor, self.pkb
         )
 
     def create_node(self, value, tree):
@@ -297,10 +298,10 @@ class FollowsStar(Relation):
     def validate_params(self):
         # Follows*(stmtRef, stmtRef)
         self.first_param = ParamsValidator.get_statement_ref(
-            self.first_param, self.query_preprocessor
+            self.first_param, self.query_preprocessor, self.pkb
         )
         self.second_param = ParamsValidator.get_statement_ref(
-            self.second_param, self.query_preprocessor
+            self.second_param, self.query_preprocessor, self.pkb
         )
 
     def create_node(self, value, tree):
@@ -323,7 +324,9 @@ class Condition(Element):
         if not re.match(CONDITION, value):
             raise InvalidQueryException(self.error_message)
         self.extract_args(value)
-        self.first_arg, self.attr_name = ParamsValidator.get_condition_variable(self.first_arg, self.query_preprocessor)
+        self.first_arg, self.attr_name = ParamsValidator.get_condition_variable(
+            self.first_arg, self.query_preprocessor
+        )
         self.second_arg = ParamsValidator.get_condition_value(self.second_arg)
         # na podstawie typu ref
         # TODO attributes validation

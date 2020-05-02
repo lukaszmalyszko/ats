@@ -47,6 +47,9 @@ class PKB:
     def get_variables_map(self):
         return self._variables_map
 
+    def get_node_with_index(self, line):
+        return [{key: value} for key, value in self._node_map.items() if value.get_line() == line][0]
+
     def isParent(self, parent, child):
         return self._parent_map.get(child) == parent
 
@@ -68,8 +71,6 @@ class PKB:
             self.__traverse_stmt_lst(
                 self._ast.get_child(procedure, 0)
                 , procedure)
-
-        print("Usage: file_name")
 
     def __traverse_stmt_lst(self, stmt_lst, parent):
         for stmt in self._ast.get_children(stmt_lst):
@@ -131,7 +132,7 @@ class PKB:
         })
 
     def __add_uses_for_assign(self, node, processed_node):
-        if isinstance(processed_node,list):
+        if isinstance(processed_node, list):
             for child in processed_node:
                 self.__add_uses_for_assign(node, child)
 
@@ -158,25 +159,25 @@ class PKB:
 
     def __add_to_stmt_list(self, stmt):
         self._stmt_map.update({
-        self.__get_node_index(stmt) : stmt
+            self.__get_node_index(stmt): stmt
         })
 
     def __add_to_if_list(self, if_node):
         self._if_map.update({
-        self.__get_node_index(if_node) : if_node
+            self.__get_node_index(if_node): if_node
         })
 
     def __add_to_while_list(self, while_node):
         self._while_map.update({
-        self.__get_node_index(while_node) : while_node
+            self.__get_node_index(while_node): while_node
         })
 
     def __add_to_assign_list(self, assign_node):
         self._assign_map.update({
-        self.__get_node_index(assign_node) : assign_node
+            self.__get_node_index(assign_node): assign_node
         })
 
     def __add_to_variables_list(self, node):
         self._variables_map.update({
-        self.__get_node_index(node) : node
+            self.__get_node_index(node): node
         })

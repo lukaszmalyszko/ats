@@ -51,7 +51,6 @@ class Parser(ParserInterface):
         text_ahead = self.__text[self.__current_index: self.__current_index + len(text_to_match)]
         if text_ahead == text_to_match:
             self.__current_index = self.__current_index + len(text_to_match)
-            print("Matched: " + text_to_match)
         else:
             raise Exception("Parser error")
 
@@ -59,15 +58,12 @@ class Parser(ParserInterface):
         self.__skip_whitespace()
 
         if token == TokenType.NAME:
-            print("Matching TokenType.NAME, line:" + str(self.__line))
             m = re.search("[A-Za-z][A-Za-z0-9]*", self.__text[self.__current_index:])
         elif token == TokenType.INTEGER:
-            print("Matching TokenType.INTEGER, line:" + str(self.__line))
             m = re.search("[0-9]+", self.__text[self.__current_index:])
 
         if m and m.start() == 0:
             self.__current_index = self.__current_index + m.end()
-            print("Matched: " + m.group(0))
             return m.group(0)
         else:
             raise Exception("Parser error")

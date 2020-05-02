@@ -1,6 +1,13 @@
 from abc import abstractmethod, ABC
 
-from query.declarations_parser.declarations_elements import Stmt, While, Assign, Variable, ProgLine, Ref
+from query.declarations_parser.declarations_elements import (
+    Stmt,
+    While,
+    Assign,
+    Variable,
+    ProgLine,
+    Ref,
+)
 
 MAP_CLASS_TO_GET_METHOD = {
     Stmt: "get_stmt_map",
@@ -10,10 +17,7 @@ MAP_CLASS_TO_GET_METHOD = {
     ProgLine: "get_nodes_map",
 }
 
-MAP_ATTR_NAME_TO_NODE_ATTRIBUTE = {
-    "varName": "name",
-    "stmt#": "line"
-}
+MAP_ATTR_NAME_TO_NODE_ATTRIBUTE = {"varName": "name", "stmt#": "line"}
 
 
 class Node(ABC):
@@ -61,7 +65,6 @@ class SelectNode(Node):
 
 
 class RelationNode(Node):
-
     def __init__(self):
         super().__init__()
         self._first_arg = None
@@ -93,10 +96,11 @@ class ModifiesNode(RelationNode):
         get_method = MAP_CLASS_TO_GET_METHOD[self.first_arg.__class__]
         stmt_map = getattr(pkb, get_method)()
 
+        for stmt in with_stmt:
+            if stmt.first_arg == self.second_arg:
+                self.second_arg = stmt.second_arg
+
         for index, node in stmt_map.items():
-            for stmt in with_stmt:
-                if stmt.first_arg == self.second_arg:
-                    self.second_arg = stmt.second_arg
             if pkb.isModifing(index, self.second_arg):
                 result.append(node.get_line())
         return result
@@ -121,10 +125,56 @@ class FollowsNode(RelationNode):
     def __init__(self):
         super().__init__()
 
+    def evaluate(self, pkb, with_stmt):
+        result = []
+        get_first_arg_method = MAP_CLASS_TO_GET_METHOD.get(self.first_arg.__class__, "")
+        get_second_arg_method = MAP_CLASS_TO_GET_METHOD.get(
+            self.second_arg.__class__, ""
+        )
+        if isinstance(self.first_arg, int):
+            first_arg_map = pkb.get_node_with_index(self.first_arg)
+        else:
+            first_arg_map = getattr(pkb, get_first_arg_method)()
+        second_arg_map = getattr(pkb, get_second_arg_method)()
+        for stmt in with_stmt:
+            if stmt.first_arg == self.second_arg:
+                self.second_arg = stmt.second_arg
+        for first_index, first_node in first_arg_map.items():
+            for second_index, second_node in second_arg_map.items():
+                if pkb.isFollowing(first_index, second_index):
+                    if self.parent.is_selected(self.first_arg):
+                        result.append(first_node.get_line())
+                    if self.parent.is_selected(self.second_arg):
+                        result.append(second_node.get_line())
+        return result
+
 
 class FollowsStarNode(RelationNode):
     def __init__(self):
         super().__init__()
+
+    def evaluate(self, pkb, with_stmt):
+        result = []
+        get_first_arg_method = MAP_CLASS_TO_GET_METHOD.get(self.first_arg.__class__, "")
+        get_second_arg_method = MAP_CLASS_TO_GET_METHOD.get(
+            self.second_arg.__class__, ""
+        )
+        if isinstance(self.first_arg, int):
+            first_arg_map = pkb.get_node_with_index(self.first_arg)
+        else:
+            first_arg_map = getattr(pkb, get_first_arg_method)()
+        second_arg_map = getattr(pkb, get_second_arg_method)()
+        for stmt in with_stmt:
+            if stmt.first_arg == self.second_arg:
+                self.second_arg = stmt.second_arg
+        for first_index, first_node in first_arg_map.items():
+            for second_index, second_node in second_arg_map.items():
+                if pkb.isFollowing(first_index, second_index):
+                    if self.parent.is_selected(self.first_arg):
+                        result.append(first_node.get_line())
+                    if self.parent.is_selected(self.second_arg):
+                        result.append(second_node.get_line())
+        return result
 
 
 class ConditionNode(Node):

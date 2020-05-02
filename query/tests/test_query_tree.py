@@ -2,11 +2,13 @@ from unittest import TestCase
 from unittest.mock import patch
 
 from query.query_preprocessor import QueryPreprocessor
+from query.tests.mixins import PkbTestCase
 
 
-class TestQueryPreprocessor(TestCase):
+class TestQueryPreprocessor(PkbTestCase):
     def setUp(self) -> None:
-        self.query_preprocessor = QueryPreprocessor()
+        super().setUp()
+        self.query_preprocessor = QueryPreprocessor(self.pkb)
         self.variables = "stmt s, s1; assign a, a1, a2; while w; variable v; constant c; prog_line n, n1, n2;"
         self.query = "Select s such that Modifies(s,'x')"
 
@@ -66,7 +68,9 @@ class TestQueryPreprocessor(TestCase):
             self.assertEqual(such_that[0].first_arg.name, first_arg)
             self.assertEqual(such_that[0].second_arg.name, second_arg)
 
-    def __then_query_tree_contains_such_that_node_with_string(self, first_arg, second_arg):
+    def __then_query_tree_contains_such_that_node_with_string(
+        self, first_arg, second_arg
+    ):
         input_values = [self.variables, self.query]
 
         with patch("builtins.input", side_effect=input_values):

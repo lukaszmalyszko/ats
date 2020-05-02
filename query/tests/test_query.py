@@ -1,14 +1,17 @@
 from unittest import TestCase
 from unittest.mock import patch
 
-
+from parser_ import Parser
+from pkb import PKB
 from query.query_preprocessor import QueryPreprocessor
 from query.declarations_parser.exceptions import InvalidDeclarationException
+from query.tests.mixins import PkbTestCase
 
 
-class TestQueryPreprocessor(TestCase):
+class TestQueryPreprocessor(PkbTestCase):
     def setUp(self) -> None:
-        self.query_preprocessor = QueryPreprocessor()
+        super().setUp()
+        self.query_preprocessor = QueryPreprocessor(self.pkb)
         self.variables = "stmt s, s1; assign a, a1, a2; while w; variable v; constant c; prog_line n, n1, n2;"
         self.query = "Select s such that Modifies(s,'x')"
 

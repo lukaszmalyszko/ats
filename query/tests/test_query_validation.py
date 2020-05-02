@@ -1,13 +1,18 @@
 from unittest import TestCase
 from unittest.mock import patch
 
-from query.query_parser.exceptions import InvalidQueryException, InvalidQueryParamException
+from query.query_parser.exceptions import (
+    InvalidQueryException,
+    InvalidQueryParamException,
+)
 from query.query_preprocessor import QueryPreprocessor
+from query.tests.mixins import PkbTestCase
 
 
-class TestQueryValidation(TestCase):
+class TestQueryValidation(PkbTestCase):
     def setUp(self) -> None:
-        self.query_preprocessor = QueryPreprocessor()
+        super().setUp()
+        self.query_preprocessor = QueryPreprocessor(self.pkb)
         self.variables = "stmt s, s1; assign a, a1, a2; while w; variable v; constant c; prog_line n, n1, n2;"
         self.query = "Select s such that Modifies(s,'x')"
 

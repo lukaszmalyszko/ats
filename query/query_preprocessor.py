@@ -4,11 +4,12 @@ from query.declarations_parser.declarations_validator import DeclarationsValidat
 
 
 class QueryPreprocessor:
-    def __init__(self):
+    def __init__(self, pkb):
         self.declarations = ""
         self.query = ""
         self.symbols = SymbolContainer()
         self.tree = None
+        self.pkb = pkb
 
     def get_input(self):
         self.declarations = self._get_declarations()
