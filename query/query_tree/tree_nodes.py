@@ -1,4 +1,16 @@
-class Node:
+from abc import abstractmethod, ABC
+
+MAP_STMT_TYPE_TO_GET_METHOD = {
+    "stmt": "get_stmt_map",
+    "while": "get_while_map",
+    "assign": "get_assign_map",
+    "variable": "get_variables_map",
+    "prog_line": "get_nodes_map",
+
+}
+
+
+class Node(ABC):
     def __init__(self):
         self._child = None
         self._parent = None
@@ -25,6 +37,10 @@ class Node:
     def sibling(self):
         return self._sibling
 
+    @abstractmethod
+    def evaluate(self, pkb):
+        pass
+
 
 class SelectNode(Node):
     def __init__(self):
@@ -38,8 +54,12 @@ class SelectNode(Node):
     def add_variable(self, node):
         self._variables.append(node)
 
+    def evaluate(self, pkb):
+        raise NotImplementedError
+
 
 class RelationNode(Node):
+
     def __init__(self):
         super().__init__()
         self._first_arg = None
@@ -61,10 +81,22 @@ class RelationNode(Node):
     def second_arg(self, node):
         self._second_arg = node
 
+    def evaluate(self, pkb):
+        pass
+
 
 class ModifiesNode(RelationNode):
     def __init__(self):
         super().__init__()
+
+    def evaluate(self, pkb):
+        result = []
+        get_method = MAP_STMT_TYPE_TO_GET_METHOD[self.first_arg.type]
+        stmt_map = getattr(pkb, get_method)()
+        for index, node in stmt_map.items():
+            if pkb.isModifing(index, self.second_arg):
+                result.append(node.get_line())
+        return result
 
 
 class UsesNode(RelationNode):
@@ -114,8 +146,14 @@ class ConditionNode(Node):
     def second_attr(self, node):
         self._second_attr = node
 
+    def evaluate(self, pkb):
+        pass
+
 
 class PatternNode(Node):
     def __init__(self):
         # TODO pattern implementation
         super().__init__()
+
+    def evaluate(self, pkb):
+        pass

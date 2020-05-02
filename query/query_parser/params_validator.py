@@ -1,34 +1,37 @@
 import re
+
+from query.query_parser.exceptions import InvalidQueryParamException
 from query.utils import INTEGER, IDENT
 
 
 class ParamsValidator:
     @staticmethod
-    def is_variable_ref_correct(ref, query_preprocessor):
-        if not query_preprocessor.symbols.check_if_contains_symbol(ref):
-            return False
-        return True
+    def get_variable_ref(ref, query_preprocessor):
+        variable = query_preprocessor.symbols.get_symbol(ref)
+        if not variable:
+            raise InvalidQueryParamException("# Niepoprawne parametry")
+        return variable
 
     @staticmethod
-    def is_statement_ref_correct(ref, query_preprocessor):
+    def get_statement_ref(ref, query_preprocessor):
         if re.match(INTEGER, ref):
             # TODO check if program contains line with such number
-            return True
-        if (
-            not query_preprocessor.symbols.check_if_contains_symbol(ref, "stmt")
-            and ref is not "_"
-        ):
-            return False
-        return True
+            raise NotImplementedError
+        if ref is "_":
+            return "_"
+        stmt_ref = query_preprocessor.symbols.get_symbol(ref)
+        if not stmt_ref:
+            raise InvalidQueryParamException("# Niepoprawne parametry")
+        return stmt_ref
 
     @staticmethod
-    def is_entity_ref_correct(ref, query_preprocessor):
+    def get_entity_ref(ref, query_preprocessor):
         if re.match(f"(['\"]{IDENT}['\"])", ref):
             # TODO check if program contains such variable
-            return True
-        if (
-            not query_preprocessor.symbols.check_if_contains_symbol(ref, "ref")
-            and ref is not "_"
-        ):
-            return False
-        return True
+            return ref.strip("'")
+        if ref is "_":
+            return "_"
+        entity_ref = query_preprocessor.symbols.get_symbol(ref)
+        if not entity_ref or entity_ref.type != "ref":
+            raise InvalidQueryParamException("# Niepoprawne parametry")
+        return entity_ref

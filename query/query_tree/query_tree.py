@@ -34,3 +34,10 @@ class QueryTree:
 
     def get_with_statements(self):
         return self._statements["with"]
+
+    def evaluate(self, pkb):
+        self.__evaluate_relations(pkb)
+
+    def __evaluate_relations(self, pkb):
+        for node in self._statements["such_that"]:
+            self._result = node.evaluate(pkb)

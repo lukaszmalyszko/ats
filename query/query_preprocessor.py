@@ -16,6 +16,9 @@ class QueryPreprocessor:
 
         return self.declarations, self.query
 
+    def get_tree(self):
+        return self.tree
+
     def _get_query(self):
         query_input = input("Podaj zapytanie: ")
         query = self.__build_query(query_input)

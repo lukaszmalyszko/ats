@@ -57,7 +57,7 @@ class PKB:
         return variable in self._parent_map.get(line)
 
     def isModifing(self, variable, line):
-        return line in self._modifies_map.get(variable)
+        return line == self._modifies_map.get(variable, "")
 
     # def isCalling(self, line, proc):
     #     return False;

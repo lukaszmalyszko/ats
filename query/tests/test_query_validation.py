@@ -1,7 +1,7 @@
 from unittest import TestCase
 from unittest.mock import patch
 
-from query.query_parser.exceptions import InvalidQueryException
+from query.query_parser.exceptions import InvalidQueryException, InvalidQueryParamException
 from query.query_preprocessor import QueryPreprocessor
 
 
@@ -16,7 +16,7 @@ class TestQueryValidation(TestCase):
         input_values = [self.variables, self.query]
 
         with patch("builtins.input", side_effect=input_values):
-            with self.assertRaises(InvalidQueryException):
+            with self.assertRaises(InvalidQueryParamException):
                 self.query_preprocessor.get_input()
 
     def test_raise_invalid_query_exception_when_no_select_at_the_beginning(self):
@@ -32,7 +32,7 @@ class TestQueryValidation(TestCase):
         input_values = [self.variables, self.query]
 
         with patch("builtins.input", side_effect=input_values):
-            with self.assertRaises(InvalidQueryException):
+            with self.assertRaises(InvalidQueryParamException):
                 self.query_preprocessor.get_input()
 
     def test_raise_invalid_query_exception_when_no_such_that_after_variable(self):
@@ -99,7 +99,7 @@ class TestQueryValidation(TestCase):
         input_values = [self.variables, self.query]
 
         with patch("builtins.input", side_effect=input_values):
-            with self.assertRaises(InvalidQueryException):
+            with self.assertRaises(InvalidQueryParamException):
                 self.query_preprocessor.get_input()
 
     def test_raise_invalid_query_exception_when_select_param_is_incorrect(self):
@@ -108,7 +108,7 @@ class TestQueryValidation(TestCase):
         input_values = [self.variables, self.query]
 
         with patch("builtins.input", side_effect=input_values):
-            with self.assertRaises(InvalidQueryException):
+            with self.assertRaises(InvalidQueryParamException):
                 self.query_preprocessor.get_input()
 
     def test_raise_invalid_query_exception_when_uses_params_are_incorrect(self):
@@ -117,7 +117,7 @@ class TestQueryValidation(TestCase):
         input_values = [self.variables, self.query]
 
         with patch("builtins.input", side_effect=input_values):
-            with self.assertRaises(InvalidQueryException):
+            with self.assertRaises(InvalidQueryParamException):
                 self.query_preprocessor.get_input()
 
     def test_raise_invalid_query_exception_when_parent_params_are_incorrect(self):
@@ -126,7 +126,7 @@ class TestQueryValidation(TestCase):
         input_values = [self.variables, self.query]
 
         with patch("builtins.input", side_effect=input_values):
-            with self.assertRaises(InvalidQueryException):
+            with self.assertRaises(InvalidQueryParamException):
                 self.query_preprocessor.get_input()
 
     def test_raise_invalid_query_exception_when_parent_star_params_are_incorrect(self):
@@ -135,7 +135,7 @@ class TestQueryValidation(TestCase):
         input_values = [self.variables, self.query]
 
         with patch("builtins.input", side_effect=input_values):
-            with self.assertRaises(InvalidQueryException):
+            with self.assertRaises(InvalidQueryParamException):
                 self.query_preprocessor.get_input()
 
     def test_raise_invalid_query_exception_when_follows_params_are_incorrect(self):
@@ -144,7 +144,7 @@ class TestQueryValidation(TestCase):
         input_values = [self.variables, self.query]
 
         with patch("builtins.input", side_effect=input_values):
-            with self.assertRaises(InvalidQueryException):
+            with self.assertRaises(InvalidQueryParamException):
                 self.query_preprocessor.get_input()
 
     def test_raise_invalid_query_exception_when_follows_star_params_are_incorrect(self):
@@ -153,7 +153,7 @@ class TestQueryValidation(TestCase):
         input_values = [self.variables, self.query]
 
         with patch("builtins.input", side_effect=input_values):
-            with self.assertRaises(InvalidQueryException):
+            with self.assertRaises(InvalidQueryParamException):
                 self.query_preprocessor.get_input()
 
     def test_raise_invalid_query_exception_when_condition_is_incorrect(self):
@@ -171,5 +171,5 @@ class TestQueryValidation(TestCase):
         input_values = [self.variables, self.query]
 
         with patch("builtins.input", side_effect=input_values):
-            with self.assertRaises(InvalidQueryException):
+            with self.assertRaises(InvalidQueryParamException):
                 self.query_preprocessor.get_input()

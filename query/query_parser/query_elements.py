@@ -68,7 +68,7 @@ class Variable(Element):
         self.next = Element
 
     def validate(self, value):
-        does_variable_exist = ParamsValidator.is_variable_ref_correct(
+        does_variable_exist = ParamsValidator.get_variable_ref(
             value, self.query_preprocessor
         )
         if not does_variable_exist:
@@ -174,6 +174,7 @@ class Relation(Element):
         relation = list(filter(value.startswith, RELATION_TO_MODEL.keys()))
         model = RELATION_TO_MODEL[relation[-1]](self.query_preprocessor)
         model.extract_params(value)
+        model.validate_params()
         model.create_node(value, tree)
 
 
@@ -185,14 +186,12 @@ class Modifies(Relation):
 
     def validate_params(self):
         # Modifies(stmtRef, entRef)
-        is_first_param_correct = ParamsValidator.is_statement_ref_correct(
+        self.first_param = ParamsValidator.get_statement_ref(
             self.first_param, self.query_preprocessor
         )
-        is_second_param_correct = ParamsValidator.is_entity_ref_correct(
+        self.second_param = ParamsValidator.get_entity_ref(
             self.second_param, self.query_preprocessor
         )
-        if not is_first_param_correct or not is_second_param_correct:
-            raise InvalidQueryException("# Niepoprawne parametry w Modifies")
 
     def create_node(self, value, tree):
         modifies_node = ModifiesNode()
@@ -209,14 +208,12 @@ class Uses(Relation):
 
     def validate_params(self):
         # Uses(stmtRef, entRef)
-        is_first_param_correct = ParamsValidator.is_statement_ref_correct(
+        self.first_param = ParamsValidator.get_statement_ref(
             self.first_param, self.query_preprocessor
         )
-        is_second_param_correct = ParamsValidator.is_entity_ref_correct(
+        self.second_param = ParamsValidator.get_entity_ref(
             self.second_param, self.query_preprocessor
         )
-        if not is_first_param_correct or not is_second_param_correct:
-            raise InvalidQueryException("# Niepoprawne parametry w Uses")
 
     def create_node(self, value, tree):
         uses_node = UsesNode()
@@ -233,14 +230,12 @@ class Parent(Relation):
 
     def validate_params(self):
         # Parent(stmtRef, stmtRef)
-        is_first_param_correct = ParamsValidator.is_statement_ref_correct(
+        self.first_param = ParamsValidator.get_statement_ref(
             self.first_param, self.query_preprocessor
         )
-        is_second_param_correct = ParamsValidator.is_statement_ref_correct(
+        self.second_param = ParamsValidator.get_statement_ref(
             self.second_param, self.query_preprocessor
         )
-        if not is_first_param_correct or not is_second_param_correct:
-            raise InvalidQueryException("# Niepoprawne parametry w Parent")
 
     def create_node(self, value, tree):
         parent_node = ParentNode()
@@ -257,14 +252,12 @@ class ParentStar(Relation):
 
     def validate_params(self):
         # Parent*(stmtRef, stmtRef)
-        is_first_param_correct = ParamsValidator.is_statement_ref_correct(
+        self.first_param = ParamsValidator.get_statement_ref(
             self.first_param, self.query_preprocessor
         )
-        is_second_param_correct = ParamsValidator.is_statement_ref_correct(
+        self.second_param = ParamsValidator.get_statement_ref(
             self.second_param, self.query_preprocessor
         )
-        if not is_first_param_correct or not is_second_param_correct:
-            raise InvalidQueryException("# Niepoprawne parametry w Parent*")
 
     def create_node(self, value, tree):
         parent_star_node = ParentStarNode()
@@ -281,14 +274,12 @@ class Follows(Relation):
 
     def validate_params(self):
         # Follows(stmtRef, stmtRef)
-        is_first_param_correct = ParamsValidator.is_statement_ref_correct(
+        self.first_param = ParamsValidator.get_statement_ref(
             self.first_param, self.query_preprocessor
         )
-        is_second_param_correct = ParamsValidator.is_statement_ref_correct(
+        self.second_param = ParamsValidator.get_statement_ref(
             self.second_param, self.query_preprocessor
         )
-        if not is_first_param_correct or not is_second_param_correct:
-            raise InvalidQueryException("# Niepoprawne parametry w Follows")
 
     def create_node(self, value, tree):
         follows_node = FollowsNode()
@@ -305,14 +296,12 @@ class FollowsStar(Relation):
 
     def validate_params(self):
         # Follows*(stmtRef, stmtRef)
-        is_first_param_correct = ParamsValidator.is_statement_ref_correct(
+        self.first_param = ParamsValidator.get_statement_ref(
             self.first_param, self.query_preprocessor
         )
-        is_second_param_correct = ParamsValidator.is_statement_ref_correct(
+        self.second_param = ParamsValidator.get_statement_ref(
             self.second_param, self.query_preprocessor
         )
-        if not is_first_param_correct or not is_second_param_correct:
-            raise InvalidQueryException("# Niepoprawne parametry w Follows*")
 
     def create_node(self, value, tree):
         follows_star_node = FollowsStarNode()
