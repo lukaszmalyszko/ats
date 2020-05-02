@@ -1,11 +1,13 @@
 from abc import abstractmethod, ABC
 
-MAP_STMT_TYPE_TO_GET_METHOD = {
-    "stmt": "get_stmt_map",
-    "while": "get_while_map",
-    "assign": "get_assign_map",
-    "variable": "get_variables_map",
-    "prog_line": "get_nodes_map",
+from query.declarations_parser.declarations_elements import Stmt, While, Assign, Variable, ProgLine
+
+MAP_CLASS_TO_GET_METHOD = {
+    Stmt: "get_stmt_map",
+    While: "get_while_map",
+    Assign: "get_assign_map",
+    Variable: "get_variables_map",
+    ProgLine: "get_nodes_map",
 
 }
 
@@ -91,7 +93,7 @@ class ModifiesNode(RelationNode):
 
     def evaluate(self, pkb):
         result = []
-        get_method = MAP_STMT_TYPE_TO_GET_METHOD[self.first_arg.type]
+        get_method = MAP_CLASS_TO_GET_METHOD[self.first_arg.__class__]
         stmt_map = getattr(pkb, get_method)()
         for index, node in stmt_map.items():
             if pkb.isModifing(index, self.second_arg):
