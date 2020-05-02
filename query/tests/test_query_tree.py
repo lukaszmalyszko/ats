@@ -22,11 +22,11 @@ class TestQueryPreprocessor(TestCase):
             self.assertEqual(select.variables[0].name, "s")
 
     def test_creates_modifies_node(self):
-        self.__then_query_tree_contains_such_that_node("s", "'x'")
+        self.__then_query_tree_contains_such_that_node_with_string("s", "x")
 
     def test_creates_uses_node(self):
         self.query = "Select s such that Uses(s, 'x') with s.stmt# = 10"
-        self.__then_query_tree_contains_such_that_node("s", "'x'")
+        self.__then_query_tree_contains_such_that_node_with_string("s", "x")
 
     def test_creates_parent_node(self):
         self.query = "Select s such that Parent(s, s1) with s.stmt# = 10"
@@ -52,8 +52,9 @@ class TestQueryPreprocessor(TestCase):
             self.query_preprocessor.get_input()
             with_stmts = self.query_preprocessor.tree.get_with_statements()
             self.assertEqual(len(with_stmts), 1)
-            self.assertEqual(with_stmts[0].first_attr, "s.stmt#")
-            self.assertEqual(with_stmts[0].second_attr, "10")
+            self.assertEqual(with_stmts[0].first_arg.name, "s")
+            self.assertEqual(with_stmts[0].attr_name, "stmt#")
+            self.assertEqual(with_stmts[0].second_arg, "10")
 
     def __then_query_tree_contains_such_that_node(self, first_arg, second_arg):
         input_values = [self.variables, self.query]
@@ -62,5 +63,15 @@ class TestQueryPreprocessor(TestCase):
             self.query_preprocessor.get_input()
             such_that = self.query_preprocessor.tree.get_such_that_statements()
             self.assertEqual(len(such_that), 1)
-            self.assertEqual(such_that[0].first_arg, first_arg)
+            self.assertEqual(such_that[0].first_arg.name, first_arg)
+            self.assertEqual(such_that[0].second_arg.name, second_arg)
+
+    def __then_query_tree_contains_such_that_node_with_string(self, first_arg, second_arg):
+        input_values = [self.variables, self.query]
+
+        with patch("builtins.input", side_effect=input_values):
+            self.query_preprocessor.get_input()
+            such_that = self.query_preprocessor.tree.get_such_that_statements()
+            self.assertEqual(len(such_that), 1)
+            self.assertEqual(such_that[0].first_arg.name, first_arg)
             self.assertEqual(such_that[0].second_arg, second_arg)

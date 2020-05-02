@@ -40,4 +40,4 @@ class QueryTree:
 
     def __evaluate_relations(self, pkb):
         for node in self._statements["such_that"]:
-            self._result = node.evaluate(pkb)
+            self._result = node.evaluate(pkb, self._statements["with"])

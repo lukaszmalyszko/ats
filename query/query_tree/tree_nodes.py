@@ -1,6 +1,6 @@
 from abc import abstractmethod, ABC
 
-from query.declarations_parser.declarations_elements import Stmt, While, Assign, Variable, ProgLine
+from query.declarations_parser.declarations_elements import Stmt, While, Assign, Variable, ProgLine, Ref
 
 MAP_CLASS_TO_GET_METHOD = {
     Stmt: "get_stmt_map",
@@ -8,7 +8,11 @@ MAP_CLASS_TO_GET_METHOD = {
     Assign: "get_assign_map",
     Variable: "get_variables_map",
     ProgLine: "get_nodes_map",
+}
 
+MAP_ATTR_NAME_TO_NODE_ATTRIBUTE = {
+    "varName": "name",
+    "stmt#": "line"
 }
 
 
@@ -38,10 +42,6 @@ class Node(ABC):
     @property
     def sibling(self):
         return self._sibling
-
-    @abstractmethod
-    def evaluate(self, pkb):
-        pass
 
 
 class SelectNode(Node):
@@ -83,19 +83,20 @@ class RelationNode(Node):
     def second_arg(self, node):
         self._second_arg = node
 
-    def evaluate(self, pkb):
-        pass
-
 
 class ModifiesNode(RelationNode):
     def __init__(self):
         super().__init__()
 
-    def evaluate(self, pkb):
+    def evaluate(self, pkb, with_stmt):
         result = []
         get_method = MAP_CLASS_TO_GET_METHOD[self.first_arg.__class__]
         stmt_map = getattr(pkb, get_method)()
+
         for index, node in stmt_map.items():
+            for stmt in with_stmt:
+                if stmt.first_arg == self.second_arg:
+                    self.second_arg = stmt.second_arg
             if pkb.isModifing(index, self.second_arg):
                 result.append(node.get_line())
         return result
@@ -129,27 +130,43 @@ class FollowsStarNode(RelationNode):
 class ConditionNode(Node):
     def __init__(self):
         super().__init__()
-        self._first_attr = None
-        self._second_attr = None
+        self._first_arg = None
+        self._second_arg = None
+        self._attr_name = ""
 
     @property
-    def first_attr(self):
-        return self._first_attr
+    def first_arg(self):
+        return self._first_arg
 
-    @first_attr.setter
-    def first_attr(self, node):
-        self._first_attr = node
+    @first_arg.setter
+    def first_arg(self, node):
+        self._first_arg = node
 
     @property
-    def second_attr(self):
-        return self._second_attr
+    def second_arg(self):
+        return self._second_arg
 
-    @second_attr.setter
-    def second_attr(self, node):
-        self._second_attr = node
+    @second_arg.setter
+    def second_arg(self, node):
+        self._second_arg = node
+
+    @property
+    def attr_name(self):
+        return self._attr_name
+
+    @attr_name.setter
+    def attr_name(self, node):
+        self._attr_name = node
 
     def evaluate(self, pkb):
-        pass
+        result = []
+        get_method = MAP_CLASS_TO_GET_METHOD[self.first_arg.__class__]
+        attr = MAP_ATTR_NAME_TO_NODE_ATTRIBUTE[self.attr_name]
+        stmt_map = getattr(pkb, get_method)()
+        for index, node in stmt_map.items():
+            if getattr(node, attr) == self.second_arg:
+                result.append(node.get_line())
+        return result
 
 
 class PatternNode(Node):

@@ -35,3 +35,20 @@ class ParamsValidator:
         if not entity_ref or entity_ref.type != "ref":
             raise InvalidQueryParamException("# Niepoprawne parametry")
         return entity_ref
+
+    @staticmethod
+    def get_condition_variable(ref, query_preprocessor):
+        if re.match(f"({IDENT}[.\"][a-zA-Z#]*)", ref):
+            var, attr_name = ref.split(".")
+            entity_ref = query_preprocessor.symbols.get_symbol(var)
+            if not entity_ref:
+                raise InvalidQueryParamException("# Niepoprawne parametry warunku")
+            return entity_ref, attr_name
+        raise InvalidQueryParamException("# Niepoprawne parametry warunku")
+
+    @staticmethod
+    def get_condition_value(ref):
+        if re.match(f"(['\"]{IDENT}['\"])", ref):
+            return ref.strip("'")
+        return ref
+

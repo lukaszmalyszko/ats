@@ -315,6 +315,7 @@ class Condition(Element):
         super().__init__(query_preprocessor)
         self.error_message = "# Niepoprawna składnia warunku"
         self.first_arg = ""
+        self.attr_name = ""
         self.second_arg = ""
         self.next = Element
 
@@ -322,6 +323,9 @@ class Condition(Element):
         if not re.match(CONDITION, value):
             raise InvalidQueryException(self.error_message)
         self.extract_args(value)
+        self.first_arg, self.attr_name = ParamsValidator.get_condition_variable(self.first_arg, self.query_preprocessor)
+        self.second_arg = ParamsValidator.get_condition_value(self.second_arg)
+        # na podstawie typu ref
         # TODO attributes validation
 
     def can_query_be_finished(self):
@@ -339,8 +343,9 @@ class Condition(Element):
 
     def create_node(self, value, tree):
         condition_node = ConditionNode()
-        condition_node.first_attr = self.first_arg
-        condition_node.second_attr = self.second_arg
+        condition_node.first_arg = self.first_arg
+        condition_node.second_arg = self.second_arg
+        condition_node.attr_name = self.attr_name
         tree.add_with(condition_node)
         pass
 

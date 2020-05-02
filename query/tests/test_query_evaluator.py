@@ -43,3 +43,14 @@ class TestQueryEvaluator(TestCase):
             self.query_evaluator.load()
             result = self.query_evaluator.get_result()
             self.assertIn(result, self.expected_result)
+
+    def test_select_assign_that_modifies_v_with_var_name(self):
+        # Arrange
+        variables = "assign a; variable v;"
+        query = "Select a such that Modifies (a,v) with v.varName='x'"
+        input_values = [variables, query]
+        # Act & Assert
+        with patch("builtins.input", side_effect=input_values):
+            self.query_evaluator.load()
+            result = self.query_evaluator.get_result()
+            self.assertIn(result, self.expected_result)
