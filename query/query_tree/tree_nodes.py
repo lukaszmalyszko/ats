@@ -135,7 +135,10 @@ class FollowsNode(RelationNode):
             first_arg_map = pkb.get_node_with_index(self.first_arg)
         else:
             first_arg_map = getattr(pkb, get_first_arg_method)()
-        second_arg_map = getattr(pkb, get_second_arg_method)()
+        if isinstance(self.second_arg, int):
+            second_arg_map = pkb.get_node_with_index(self.second_arg)
+        else:
+            second_arg_map = getattr(pkb, get_second_arg_method)()
         for stmt in with_stmt:
             if stmt.first_arg == self.second_arg:
                 self.second_arg = stmt.second_arg
@@ -163,7 +166,10 @@ class FollowsStarNode(RelationNode):
             first_arg_map = pkb.get_node_with_index(self.first_arg)
         else:
             first_arg_map = getattr(pkb, get_first_arg_method)()
-        second_arg_map = getattr(pkb, get_second_arg_method)()
+        if isinstance(self.second_arg, int):
+            second_arg_map = pkb.get_node_with_index(self.second_arg)
+        else:
+            second_arg_map = getattr(pkb, get_second_arg_method)()
         for stmt in with_stmt:
             if stmt.first_arg == self.second_arg:
                 self.second_arg = stmt.second_arg

@@ -72,7 +72,7 @@ class TestQueryEvaluator(PkbTestCase):
         with patch("builtins.input", side_effect=input_values):
             self.query_evaluator.load()
             result = self.query_evaluator.get_result()
-            self.assertEquals(result, "13")
+            self.assertEqual(result, "13")
 
     def test_select_assign_that_is_followed_by_prog_line_with_no_result(self):
         # Arrange
@@ -83,4 +83,16 @@ class TestQueryEvaluator(PkbTestCase):
         with patch("builtins.input", side_effect=input_values):
             self.query_evaluator.load()
             result = self.query_evaluator.get_result()
-            self.assertEquals(result, "")
+            self.assertEqual(result, "")
+
+    def test_select_assign_that_follows_prog_line(self):
+        # Arrange
+        variables = "assign a;"
+        query = "Select a such that Follows (a, 13)"
+        input_values = [variables, query]
+        # Act & Assert
+        with patch("builtins.input", side_effect=input_values):
+            self.query_evaluator.load()
+            result = self.query_evaluator.get_result()
+            self.assertEqual(result, "14")
+
