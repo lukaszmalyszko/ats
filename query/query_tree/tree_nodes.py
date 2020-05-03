@@ -140,7 +140,6 @@ class FollowsNode(RelationNode):
         else:
             second_arg_map = getattr(pkb, get_second_arg_method)()
         for stmt in with_stmt:
-            # jeżeli with dotyczy pierwszego argumentu
             if stmt.first_arg == self.first_arg:
                 first_arg_map = stmt.evaluate(first_arg_map)
             if stmt.first_arg == self.second_arg:
