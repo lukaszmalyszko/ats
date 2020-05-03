@@ -96,3 +96,13 @@ class TestQueryEvaluator(PkbTestCase):
             result = self.query_evaluator.get_result()
             self.assertEqual(result, "14")
 
+    def test_select_statement_that_follows_with_prog_line(self):
+        # Arrange
+        variables = "stmt s1, s2;"
+        query = "Select s1 such that Follows (s1, s2) with s1.stmt#= 5"
+        input_values = [variables, query]
+        # Act & Assert
+        with patch("builtins.input", side_effect=input_values):
+            self.query_evaluator.load()
+            result = self.query_evaluator.get_result()
+            self.assertEqual(result, "5")

@@ -17,7 +17,7 @@ MAP_CLASS_TO_GET_METHOD = {
     ProgLine: "get_nodes_map",
 }
 
-MAP_ATTR_NAME_TO_NODE_ATTRIBUTE = {"varName": "name", "stmt#": "line"}
+MAP_ATTR_NAME_TO_NODE_ATTRIBUTE = {"varName": "get_name", "stmt#": "get_line"}
 
 
 class Node(ABC):
@@ -140,8 +140,11 @@ class FollowsNode(RelationNode):
         else:
             second_arg_map = getattr(pkb, get_second_arg_method)()
         for stmt in with_stmt:
+            # jeżeli with dotyczy pierwszego argumentu
+            if stmt.first_arg == self.first_arg:
+                first_arg_map = stmt.evaluate(first_arg_map)
             if stmt.first_arg == self.second_arg:
-                self.second_arg = stmt.second_arg
+                second_arg_map = stmt.evaluate(second_arg_map)
         for first_index, first_node in first_arg_map.items():
             for second_index, second_node in second_arg_map.items():
                 if pkb.isFollowing(first_index, second_index):
@@ -214,14 +217,12 @@ class ConditionNode(Node):
     def attr_name(self, node):
         self._attr_name = node
 
-    def evaluate(self, pkb):
-        result = []
-        get_method = MAP_CLASS_TO_GET_METHOD[self.first_arg.__class__]
+    def evaluate(self, dict_to_filter):
+        result = {}
         attr = MAP_ATTR_NAME_TO_NODE_ATTRIBUTE[self.attr_name]
-        stmt_map = getattr(pkb, get_method)()
-        for index, node in stmt_map.items():
-            if getattr(node, attr) == self.second_arg:
-                result.append(node.get_line())
+        for index, node in dict_to_filter.items():
+            if getattr(node, attr)() == self.second_arg:
+                result[index] = node
         return result
 
 

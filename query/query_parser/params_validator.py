@@ -53,4 +53,4 @@ class ParamsValidator:
     def get_condition_value(ref):
         if re.match(f"(['\"]{IDENT}['\"])", ref):
             return ref.strip("'")
-        return ref
+        return int(ref)

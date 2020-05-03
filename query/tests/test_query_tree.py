@@ -56,7 +56,7 @@ class TestQueryPreprocessor(PkbTestCase):
             self.assertEqual(len(with_stmts), 1)
             self.assertEqual(with_stmts[0].first_arg.name, "s")
             self.assertEqual(with_stmts[0].attr_name, "stmt#")
-            self.assertEqual(with_stmts[0].second_arg, "10")
+            self.assertEqual(with_stmts[0].second_arg, 10)
 
     def __then_query_tree_contains_such_that_node(self, first_arg, second_arg):
         input_values = [self.variables, self.query]
