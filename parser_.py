@@ -15,6 +15,7 @@ class Parser(ParserInterface):
     __current_index = 0
     __ast = AST()
     __eof = False
+    __single_char_tokens = ";{}()=+-*"
 
     def parse(self, text):
         self.__text = text
@@ -38,7 +39,7 @@ class Parser(ParserInterface):
     def __get_next_token(self):
         self.__skip_whitespace()
         next_char = self.__text[self.__current_index]
-        if next_char in ';{}=+-*':
+        if next_char in self.__single_char_tokens:
             return next_char
         if next_char.isalnum():
             m = re.search("[A-Za-z0-9][A-Za-z0-9]*", self.__text[self.__current_index:])
