@@ -31,7 +31,7 @@ class ParamsValidator:
     def get_entity_ref(ref, query_preprocessor):
         if re.match(f"(['\"]{IDENT}['\"])", ref):
             # TODO check if program contains such variable
-            return ref.strip("'")
+            return ref.strip('"')
         if ref is "_":
             return "_"
         entity_ref = query_preprocessor.symbols.get_symbol(ref)
@@ -52,5 +52,5 @@ class ParamsValidator:
     @staticmethod
     def get_condition_value(ref):
         if re.match(f"(['\"]{IDENT}['\"])", ref):
-            return ref.strip("'")
+            return ref.strip('"')
         return int(ref)
