@@ -42,10 +42,10 @@ class Parser(ParserInterface):
         if next_char in self.__single_char_tokens:
             return next_char
         if next_char.isalnum():
-            m = re.search("[A-Za-z0-9][A-Za-z0-9]*", self.__text[self.__current_index:])
+            m = re.search("^[A-Za-z0-9]+", self.__text[self.__current_index:])
             return m.group(0)
         else:
-            raise Exception("Parser error")
+            raise Exception("Parser error at line: " + str(self.__line))
 
     def __match_text(self, text_to_match):
         self.__skip_whitespace()
@@ -54,24 +54,23 @@ class Parser(ParserInterface):
             self.__current_index = self.__current_index + len(text_to_match)
             print("Matched: " + text_to_match)
         else:
-            raise Exception("Parser error")
+            text_ahead = self.__get_next_token().replace("\n", "\\n")
+            raise Exception("Parser error at line: " + str(self.__line) + " (expected '" + text_to_match + "', found: '" + text_ahead + "')")
 
     def __match_token(self, token):
         self.__skip_whitespace()
 
         if token == TokenType.NAME:
-            print("Matching TokenType.NAME, line:" + str(self.__line))
-            m = re.search("[A-Za-z][A-Za-z0-9]*", self.__text[self.__current_index:])
+            m = re.search("^[A-Za-z][A-Za-z0-9]*", self.__text[self.__current_index:])
         elif token == TokenType.INTEGER:
-            print("Matching TokenType.INTEGER, line:" + str(self.__line))
-            m = re.search("[0-9]+", self.__text[self.__current_index:])
+            m = re.search("^[0-9]+", self.__text[self.__current_index:])
 
         if m and m.start() == 0:
             self.__current_index = self.__current_index + m.end()
             print("Matched: " + m.group(0))
             return m.group(0)
         else:
-            raise Exception("Parser error")
+            raise Exception("Parser error at line: " + str(self.__line))
 
     def __procedure(self):
         procedure_node = self.__ast.create_node(NodeType.PROCEDURE)
