@@ -52,7 +52,6 @@ class Parser(ParserInterface):
         text_ahead = self.__text[self.__current_index: self.__current_index + len(text_to_match)]
         if text_ahead == text_to_match:
             self.__current_index = self.__current_index + len(text_to_match)
-            print("Matched: " + text_to_match)
         else:
             text_ahead = self.__get_next_token().replace("\n", "\\n")
             raise Exception("Parser error at line: " + str(self.__line) + " (expected '" + text_to_match + "', found: '" + text_ahead + "')")
@@ -67,7 +66,6 @@ class Parser(ParserInterface):
 
         if m and m.start() == 0:
             self.__current_index = self.__current_index + m.end()
-            print("Matched: " + m.group(0))
             return m.group(0)
         else:
             raise Exception("Parser error at line: " + str(self.__line))

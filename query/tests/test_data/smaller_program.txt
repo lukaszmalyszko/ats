@@ -1,0 +1,4 @@
+procedure Fern {
+    y = 10;
+	x = y + 5;
+}
