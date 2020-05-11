@@ -20,6 +20,7 @@ class Parser(ParserInterface):
     def parse(self, text):
         self.__text = text
         self.__line = 1
+        self.__stmt_number = 0
         procedure_lst = []
         while (self.__eof != True):
             procedure_lst.append(self.__procedure())
@@ -76,7 +77,7 @@ class Parser(ParserInterface):
         self.__match_text('procedure')
         name = self.__match_token(TokenType.NAME)
         self.__ast.set_node_value(procedure_node, name)
-        self.__ast.set_node_line(procedure_node, self.__line)
+        self.__ast.set_node_line(procedure_node, self.__stmt_number)
         self.__match_text('{')
         stmt_lst_node = self.__stmt_lst()
         self.__match_text('}')
@@ -85,7 +86,7 @@ class Parser(ParserInterface):
 
     def __stmt_lst(self):
         stmt_lst_node = self.__ast.create_node(NodeType.STMT_LST)
-        self.__ast.set_node_line(stmt_lst_node, self.__line)
+        self.__ast.set_node_line(stmt_lst_node, self.__stmt_number)
         stmt_node = self.__stmt()
         next_child = 0
         self.__ast.add_child(stmt_lst_node, stmt_node, next_child)
@@ -99,6 +100,7 @@ class Parser(ParserInterface):
 
     def __stmt(self):
         next_token = self.__get_next_token()
+        self.__stmt_number += 1
         if next_token == 'while':
             node = self.__while()
         elif next_token == 'if':
@@ -112,10 +114,10 @@ class Parser(ParserInterface):
 
     def __assign(self):
         assign_node = self.__ast.create_node(NodeType.ASSIGN)
-        self.__ast.set_node_line(assign_node, self.__line)
+        self.__ast.set_node_line(assign_node, self.__stmt_number)
         var_name = self.__match_token(TokenType.NAME)
         var_node = self.__ast.create_node(NodeType.VARIABLE)
-        self.__ast.set_node_line(assign_node, self.__line)
+        self.__ast.set_node_line(assign_node, self.__stmt_number)
         self.__ast.set_node_value(var_node, var_name)
         self.__ast.add_child(assign_node, var_node, 0)
         self.__match_text('=')
@@ -126,11 +128,11 @@ class Parser(ParserInterface):
 
     def __while(self):
         while_node = self.__ast.create_node(NodeType.WHILE)
-        self.__ast.set_node_line(while_node, self.__line)
+        self.__ast.set_node_line(while_node, self.__stmt_number)
         self.__match_text('while')
         var_name = self.__match_token(TokenType.NAME)
         var_node = self.__ast.create_node(NodeType.VARIABLE)
-        self.__ast.set_node_line(var_node, self.__line)
+        self.__ast.set_node_line(var_node, self.__stmt_number)
         self.__ast.set_node_value(var_node, var_name)
         self.__ast.add_child(while_node, var_node, 0)
         self.__match_text('{')
@@ -141,11 +143,11 @@ class Parser(ParserInterface):
 
     def __if(self):
         if_node = self.__ast.create_node(NodeType.IF)
-        self.__ast.set_node_line(if_node, self.__line)
+        self.__ast.set_node_line(if_node, self.__stmt_number)
         self.__match_text('if')
         var_name = self.__match_token(TokenType.NAME)
         var_node = self.__ast.create_node(NodeType.VARIABLE)
-        self.__ast.set_node_line(var_node, self.__line)
+        self.__ast.set_node_line(var_node, self.__stmt_number)
         self.__ast.set_node_value(var_node, var_name)
         self.__ast.add_child(if_node, var_node, 0)
         self.__match_text('then')
@@ -162,7 +164,7 @@ class Parser(ParserInterface):
 
     def __call(self):
         call_node = self.__ast.create_node(NodeType.CALL)
-        self.__ast.set_node_line(call_node, self.__line)
+        self.__ast.set_node_line(call_node, self.__stmt_number)
         self.__match_text('call')
         proc_name = self.__match_token(TokenType.NAME)
         self.__match_text(';')
@@ -178,14 +180,14 @@ class Parser(ParserInterface):
             expr1 = self.__term()
             if op == '-':
                 op_node = self.__ast.create_node(NodeType.ARITHMETIC)
-                self.__ast.set_node_line(op_node, self.__line)
+                self.__ast.set_node_line(op_node, self.__stmt_number)
                 self.__ast.set_node_value(op_node, op)
                 self.__ast.add_child(op_node, expr, 0)
                 self.__ast.add_child(op_node, expr1, 1)
                 expr = op_node
             elif op == '+':
                 op_node = self.__ast.create_node(NodeType.ARITHMETIC)
-                self.__ast.set_node_line(op_node, self.__line)
+                self.__ast.set_node_line(op_node, self.__stmt_number)
                 self.__ast.set_node_value(op_node, op)
                 self.__ast.add_child(op_node, expr, 0)
                 self.__ast.add_child(op_node, expr1, 1)
@@ -202,7 +204,7 @@ class Parser(ParserInterface):
             term1 = self.__factor()
             if op == '*':
                 op_node = self.__ast.create_node(NodeType.ARITHMETIC)
-                self.__ast.set_node_line(op_node, self.__line)
+                self.__ast.set_node_line(op_node, self.__stmt_number)
                 self.__ast.set_node_value(op_node, op)
                 self.__ast.add_child(op_node, term, 0)
                 self.__ast.add_child(op_node, term1, 1)
@@ -215,12 +217,12 @@ class Parser(ParserInterface):
         if next_token.isnumeric():
             value = self.__match_token(TokenType.INTEGER)
             node = self.__ast.create_node(NodeType.INTEGER)
-            self.__ast.set_node_line(node, self.__line)
+            self.__ast.set_node_line(node, self.__stmt_number)
             self.__ast.set_node_value(node, value)
         elif next_token.isalnum():
             name = self.__match_token(TokenType.NAME)
             node = self.__ast.create_node(NodeType.VARIABLE)
-            self.__ast.set_node_line(node, self.__line)
+            self.__ast.set_node_line(node, self.__stmt_number)
             self.__ast.set_node_value(node, name)
         elif next_token == '(':
             self.__match_text('(')
@@ -231,11 +233,11 @@ class Parser(ParserInterface):
             term1 = self.__term()
 
             emptyNode = self.__ast.create_node(NodeType.INTEGER)
-            self.__ast.set_node_line(emptyNode, self.__line)
+            self.__ast.set_node_line(emptyNode, self.__stmt_number)
             self.__ast.set_node_value(emptyNode, 0)
 
             node = self.__ast.create_node(NodeType.ARITHMETIC)
-            self.__ast.set_node_line(node, self.__line)
+            self.__ast.set_node_line(node, self.__stmt_number)
             self.__ast.set_node_value(node, next_token)
             self.__ast.add_child(node, emptyNode, 0)
             self.__ast.add_child(node, term1, 1)
