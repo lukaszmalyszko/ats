@@ -10,7 +10,7 @@ class TestQueryPreprocessor(PkbTestCase):
         super().setUp()
         self.query_preprocessor = QueryPreprocessor(self.pkb)
         self.variables = "stmt s, s1; assign a, a1, a2; while w; variable v; constant c; prog_line n, n1, n2;"
-        self.query = "Select s such that Modifies(s,'x')"
+        self.query = "Select <s, s1> such that Modifies(s,'x')"
 
     def test_creates_select_and_empty_result(self):
         input_values = [self.variables, self.query]

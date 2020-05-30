@@ -68,20 +68,32 @@ class Variable(Element):
         self.error_message = "# Oczekiwana poprawna nazwa elementu"
         self.next = Element
 
-    def validate(self, value):
-        does_variable_exist = ParamsValidator.get_variable_ref(
-            value, self.query_preprocessor
-        )
-        if not does_variable_exist:
-            raise InvalidQueryException(self.error_message)
+    def validate(self, values):
+        if values.startswith("<"):
+            values = values[1:-1].split(",")
+        else:
+            values = [values]
+        for value in values:
+            value = value.strip()
+            does_variable_exist = ParamsValidator.get_variable_ref(
+                value, self.query_preprocessor
+            )
+            if not does_variable_exist:
+                raise InvalidQueryException(self.error_message)
 
     def can_query_be_finished(self):
         return False
 
-    def create_node(self, value, tree):
+    def create_node(self, values, tree):
         select = SelectNode()
-        variable = self.query_preprocessor.symbols.get_symbol(value)
-        select.add_variable(variable)
+        if values.startswith("<"):
+            values = values[1:-1].split(",")
+        else:
+            values = [values]
+        for value in values:
+            value = value.strip()
+            variable = self.query_preprocessor.symbols.get_symbol(value)
+            select.add_variable(variable)
         tree.set_select(select)
 
 

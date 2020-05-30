@@ -15,6 +15,7 @@ class QueryParser:
         buffer = ""
         relation = False
         condition = False
+        params = False
         for char in query_string:
             if "with" in buffer:
                 condition = True
@@ -23,7 +24,7 @@ class QueryParser:
                 continue
             if char == "(":
                 relation = True
-            if char != " " and buffer.endswith(" ") and not relation and not condition:
+            if char != " " and buffer.endswith(" ") and not relation and not condition and not params:
                 elements.append(buffer)
                 buffer = ""
             if condition:
@@ -31,6 +32,10 @@ class QueryParser:
                     condition = False
             if char == ")":
                 relation = False
+            if char == "<":
+                params = True
+            if char == ">":
+                params = False
             buffer = buffer + char
         elements.append(buffer)
         elements = [element.strip(" ") for element in elements]

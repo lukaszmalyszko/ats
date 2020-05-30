@@ -1,8 +1,5 @@
-from unittest import TestCase
 from unittest.mock import patch
 
-from parser_ import Parser
-from pkb import PKB
 from query.query_preprocessor import QueryPreprocessor
 from query.declarations_parser.exceptions import InvalidDeclarationException
 from query.tests.mixins import PkbTestCase
