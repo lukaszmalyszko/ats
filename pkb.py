@@ -60,7 +60,7 @@ class PKB:
         return self._follows_map.get(curr) == prev
 
     def isUsing(self, line, variable):
-        return variable == self._uses_map.get(line, "")
+        return variable in self._uses_map.get(line, [])
 
     def isModifing(self, line, variable):
         return variable == self._modifies_map.get(line, "")
@@ -147,9 +147,12 @@ class PKB:
                 self.__add_uses_for_assign(node, self._ast.get_children(processed_node))
 
     def __add_uses(self, node, var):
-        self._uses_map.update({
-            self.__get_node_index(node): self._ast.get_node_value(var)
-        })
+        if self._uses_map.get(self.__get_node_index(node)):
+            self._uses_map.get(self.__get_node_index(node)).append(self._ast.get_node_value(var))
+        else:
+            self._uses_map.update({
+                self.__get_node_index(node): [self._ast.get_node_value(var)]
+            })
 
     def __fill_follows(self, stmt_lst):
         prev_node = None
