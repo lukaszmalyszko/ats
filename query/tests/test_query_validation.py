@@ -1,4 +1,3 @@
-from unittest import TestCase
 from unittest.mock import patch
 
 from query.query_parser.exceptions import (

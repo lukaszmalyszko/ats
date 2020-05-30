@@ -125,3 +125,14 @@ class TestQueryEvaluator(PkbTestCase):
             self.query_evaluator.load()
             result = self.query_evaluator.get_result()
             self.assertEqual(result, "4, 5, 7, 9, 11, 24, 31, 32, 39")
+
+    def test_select_statement_that_modifies_and_uses(self):
+        # Arrange
+        variables = "stmt s1; variable v;"
+        query = "Select s1 such that Modifies(s1,'x') and Uses(s1,'y')"
+        input_values = [variables, query]
+        # Act & Assert
+        with patch("builtins.input", side_effect=input_values):
+            self.query_evaluator.load()
+            result = self.query_evaluator.get_result()
+            self.assertEqual(result, "3, 16, 19, 32, 37")
