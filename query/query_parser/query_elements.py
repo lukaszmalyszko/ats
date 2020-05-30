@@ -368,4 +368,5 @@ CONSTRUCTION_TO_NEXT_MAPPING = {
     "that": Relation,
     "pattern": None,
     "with": Condition,
+    "and": Relation,
 }

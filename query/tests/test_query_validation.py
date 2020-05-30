@@ -178,3 +178,24 @@ class TestQueryValidation(PkbTestCase):
         with patch("builtins.input", side_effect=input_values):
             with self.assertRaises(InvalidQueryParamException):
                 self.query_preprocessor.get_input()
+
+    def test_raise_invalid_query_exception_when_query_ends_with_and(
+        self,
+    ):
+        self.query = "Select s such that Modifies(s, v) and"
+        input_values = [self.variables, self.query]
+
+        with patch("builtins.input", side_effect=input_values):
+            with self.assertRaises(InvalidQueryException):
+                self.query_preprocessor.get_input()
+
+    def test_raise_invalid_query_exception_when_no_and_between_relations(
+        self,
+    ):
+        self.query = "Select s such that Modifies(s, v) Uses(s,'x')"
+        input_values = [self.variables, self.query]
+
+        with patch("builtins.input", side_effect=input_values):
+            with self.assertRaises(InvalidQueryException):
+                self.query_preprocessor.get_input()
+

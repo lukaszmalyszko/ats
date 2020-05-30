@@ -58,6 +58,11 @@ class TestQueryPreprocessor(PkbTestCase):
             self.assertEqual(with_stmts[0].attr_name, "stmt#")
             self.assertEqual(with_stmts[0].second_arg, 10)
 
+    def test_creates_two_nodes(self):
+        self.query = "Select s such that Modifies(s,'x') and Uses(s, 'y')"
+        self.__then_query_tree_contains_such_that_node_with_string("s", "x")
+        self.__then_query_tree_contains_such_that_node_with_string("s", "y", 1)
+
     def __then_query_tree_contains_such_that_node(self, first_arg, second_arg):
         input_values = [self.variables, self.query]
 
@@ -69,13 +74,12 @@ class TestQueryPreprocessor(PkbTestCase):
             self.assertEqual(such_that[0].second_arg.name, second_arg)
 
     def __then_query_tree_contains_such_that_node_with_string(
-        self, first_arg, second_arg
+        self, first_arg, second_arg, position=0
     ):
         input_values = [self.variables, self.query]
 
         with patch("builtins.input", side_effect=input_values):
             self.query_preprocessor.get_input()
             such_that = self.query_preprocessor.tree.get_such_that_statements()
-            self.assertEqual(len(such_that), 1)
-            self.assertEqual(such_that[0].first_arg.name, first_arg)
-            self.assertEqual(such_that[0].second_arg, second_arg)
+            self.assertEqual(such_that[position].first_arg.name, first_arg)
+            self.assertEqual(such_that[position].second_arg, second_arg)
