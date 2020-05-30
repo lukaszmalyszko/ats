@@ -1,5 +1,6 @@
 from abc import ABC
 
+from ast import NodeType
 from query.declarations_parser.declarations_elements import (
     Stmt,
     While,
@@ -184,8 +185,49 @@ class ParentNode(RelationNode):
 
 
 class ParentStarNode(RelationNode):
-    def __init__(self):
+    def __init__(self, grand_parent=None):
         super().__init__()
+        self._grand_parent = grand_parent
+
+    def evaluate(self, pkb, with_stmt, previous_result=None):
+        total_result = {
+            self.first_arg: [],
+            self.second_arg: [],
+        }
+        first_args, second_args = self.get_arguments(pkb, with_stmt, previous_result)
+        second_args = [{key: value} for key, value in pkb.get_nodes_map().items()]
+
+        for first_arg in first_args:
+            first_index, first_node = list(first_arg.items())[0]
+            for second_arg in second_args:
+                second_index, second_node = list(second_arg.items())[0]
+                if pkb.isParent(first_index, second_index):
+                    if second_node not in [NodeType.VARIABLE, NodeType.INTEGER, NodeType.ARITHMETIC]:
+                        total_result[self.first_arg].append({first_index: first_node})
+                        total_result[self.second_arg].append({second_index: second_node})
+                        if self._grand_parent:
+                            grand_index, grand_node = list(self._grand_parent.items())[0]
+                            total_result[self.first_arg].append({grand_index: grand_node})
+                            total_result[self.second_arg].append({second_index: second_node})
+                    self._first_arg_result.append({first_index: first_node})
+                    self._second_arg_result.append({second_index: second_node})
+                    result = {
+                        self.first_arg: [{second_index: second_node}],
+                        self.second_arg: [],
+                    }
+                    parent_star_node = ParentStarNode(self._grand_parent or first_arg)
+                    parent_star_node.first_arg = self.first_arg
+                    parent_star_node.second_arg = self.second_arg
+                    result = parent_star_node.evaluate(pkb, with_stmt, result)
+                    if result:
+                        self._first_arg_result = self._first_arg_result + result[self.first_arg]
+                        self._second_arg_result = self._second_arg_result + result[self._second_arg]
+        if not len(self._first_arg_result):
+            return None
+
+        total_result[self.first_arg] = total_result[self.first_arg] + self._first_arg_result
+        total_result[self.second_arg] = total_result[self.second_arg] + self._second_arg_result
+        return total_result
 
 
 class FollowsNode(RelationNode):
