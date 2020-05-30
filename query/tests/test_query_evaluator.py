@@ -146,4 +146,4 @@ class TestQueryEvaluator(PkbTestCase):
         with patch("builtins.input", side_effect=input_values):
             self.query_evaluator.load()
             result = self.query_evaluator.get_result()
-            self.assertEqual(result, "3, 16, 19, 32, 37")
+            self.assertEqual(result, "3 x, 16 x, 19 x, 32 x, 37 x")
