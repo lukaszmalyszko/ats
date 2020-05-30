@@ -1,3 +1,6 @@
+from query.declarations_parser.declarations_elements import Stmt, Variable
+
+
 class QueryTree:
     def __init__(self):
         self._select = None
@@ -47,7 +50,10 @@ class QueryTree:
     def get_result(self):
         result = {key: value for (key, value) in self.result.items() if key in self.select.variables}
         for key, value in result.items():
-            result.update({key: [list(x.items())[0][1].get_line() for x in value]})
+            if isinstance(key, Stmt):
+                result.update({key: [list(x.items())[0][1].get_line() for x in value]})
+            elif isinstance(key, Variable):
+                result.update({key: [list(x.items())[0][1].get_value() for x in value]})
         return set(zip(*result.values()))
 
     def __evaluate_relations(self, pkb):
