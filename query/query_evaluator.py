@@ -12,11 +12,18 @@ class QueryEvaluator:
     def get_result(self):
         tree = self.preprocessor.get_tree()
         tree.evaluate(self.pkb)
-        result = tree.result
+        result = tree.get_result()
         return self.__parse_result(result)
 
     def __parse_result(self, result):
         result_str = ""
-        for item in result:
-            result_str = f"{result_str}{item}, "
+        for items in result:
+            if len(items) > 1:
+                single_result = "("
+                for item in items:
+                    single_result = f"{single_result}{item}, "
+                single_result = f"{single_result[:-2]})"
+                result_str = f"{result_str}{single_result}"
+            else:
+                result_str = f"{result_str}{items[0]}, "
         return result_str[:-2]

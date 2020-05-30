@@ -1,7 +1,7 @@
 class QueryTree:
     def __init__(self):
         self._select = None
-        self._result = None
+        self._result = {}
         self._statements = {
             "such_that": [],
             "with": [],
@@ -44,6 +44,15 @@ class QueryTree:
     def evaluate(self, pkb):
         self.__evaluate_relations(pkb)
 
+    def get_result(self):
+        result = []
+        for i in range(len(self.result[self.select.variables[0]])):
+            single_result = []
+            for var in self.select.variables:
+                single_result.append(self.result[var][i])
+            result.append(single_result)
+        return result
+
     def __evaluate_relations(self, pkb):
         for node in self._statements["such_that"]:
-            self._result = node.evaluate(pkb, self._statements["with"])
+            self._result.update(node.evaluate(pkb, self._statements["with"]))

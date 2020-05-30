@@ -50,6 +50,9 @@ class PKB:
     def get_node_with_index(self, line):
         return [{key: value} for key, value in self._node_map.items() if value.get_line() == line][0]
 
+    def get_node_with_value(self, element):
+        return [{key: value} for key, value in self._node_map.items() if value.get_value() == element][0]
+
     def isParent(self, parent, child):
         return self._parent_map.get(child) == parent
 
@@ -59,8 +62,8 @@ class PKB:
     def isUsing(self, variable, line):
         return variable in self._parent_map.get(line)
 
-    def isModifing(self, variable, line):
-        return line == self._modifies_map.get(variable, "")
+    def isModifing(self, line, variable):
+        return variable == self._modifies_map.get(line, "")
 
     # def isCalling(self, line, proc):
     #     return False;
