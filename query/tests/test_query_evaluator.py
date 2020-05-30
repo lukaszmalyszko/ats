@@ -103,3 +103,25 @@ class TestQueryEvaluator(PkbTestCase):
             self.query_evaluator.load()
             result = self.query_evaluator.get_result()
             self.assertEqual(result, "5")
+
+    def test_select_statement_that_is_parent(self):
+        # Arrange
+        variables = "stmt s1, s2;"
+        query = "Select s1 such that Parent (s1, s2)"
+        input_values = [variables, query]
+        # Act & Assert
+        with patch("builtins.input", side_effect=input_values):
+            self.query_evaluator.load()
+            result = self.query_evaluator.get_result()
+            self.assertEqual(result, "10, 12, 23, 30, 35, 36")
+
+    def test_select_statement_that_is_using_with_var_name(self):
+        # Arrange
+        variables = "stmt s1; variable v;"
+        query = "Select s1 such that Uses (s1, v) with v.varName='x'"
+        input_values = [variables, query]
+        # Act & Assert
+        with patch("builtins.input", side_effect=input_values):
+            self.query_evaluator.load()
+            result = self.query_evaluator.get_result()
+            self.assertEqual(result, "4, 5, 7, 9, 11, 24, 31, 32, 39")

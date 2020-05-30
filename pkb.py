@@ -59,8 +59,8 @@ class PKB:
     def isFollowing(self, curr, prev):
         return self._follows_map.get(curr) == prev
 
-    def isUsing(self, variable, line):
-        return variable in self._parent_map.get(line)
+    def isUsing(self, line, variable):
+        return variable == self._uses_map.get(line, "")
 
     def isModifing(self, line, variable):
         return variable == self._modifies_map.get(line, "")

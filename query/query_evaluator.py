@@ -17,7 +17,9 @@ class QueryEvaluator:
 
     def __parse_result(self, result):
         result_str = ""
-        for items in result:
+        result_list = list(result)
+        result_list.sort()
+        for items in result_list:
             if len(items) > 1:
                 single_result = "("
                 for item in items:

@@ -1,4 +1,4 @@
-from abc import abstractmethod, ABC
+from abc import ABC
 
 from query.declarations_parser.declarations_elements import (
     Stmt,
@@ -139,10 +139,36 @@ class UsesNode(RelationNode):
     def __init__(self):
         super().__init__()
 
+    def evaluate(self, pkb, with_stmt):
+        first_arg_map, second_arg_map = self.get_arguments(pkb, with_stmt)
+
+        for first_index, first_node in first_arg_map.items():
+            for second_index, second_node in second_arg_map.items():
+                if pkb.isUsing(first_index, second_node.get_value()):
+                    self._first_arg_result.append(first_node.get_line())
+                    self._second_arg_result.append(second_node.get_line())
+        return {
+            self.first_arg: self._first_arg_result,
+            self.second_arg: self._second_arg_result,
+        }
+
 
 class ParentNode(RelationNode):
     def __init__(self):
         super().__init__()
+
+    def evaluate(self, pkb, with_stmt):
+        first_arg_map, second_arg_map = self.get_arguments(pkb, with_stmt)
+
+        for first_index, first_node in first_arg_map.items():
+            for second_index, second_node in second_arg_map.items():
+                if pkb.isParent(first_index, second_index):
+                    self._first_arg_result.append(first_node.get_line())
+                    self._second_arg_result.append(second_node.get_line())
+        return {
+            self.first_arg: self._first_arg_result,
+            self.second_arg: self._second_arg_result,
+        }
 
 
 class ParentStarNode(RelationNode):

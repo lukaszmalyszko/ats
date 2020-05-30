@@ -45,13 +45,8 @@ class QueryTree:
         self.__evaluate_relations(pkb)
 
     def get_result(self):
-        result = []
-        for i in range(len(self.result[self.select.variables[0]])):
-            single_result = []
-            for var in self.select.variables:
-                single_result.append(self.result[var][i])
-            result.append(single_result)
-        return result
+        result = {key: value for (key, value) in self.result.items() if key in self.select.variables}
+        return set(zip(*result.values()))
 
     def __evaluate_relations(self, pkb):
         for node in self._statements["such_that"]:
