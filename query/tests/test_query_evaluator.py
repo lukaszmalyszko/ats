@@ -182,3 +182,18 @@ class TestQueryEvaluator(PkbTestCase):
             self.query_evaluator.load()
             result = self.query_evaluator.get_result()
             self.assertEqual(result, "10 11, 10 12, 10 13, 10 14, 10 16, 10 17, 10 18, 10 19")
+
+    def test_select_statement_that_follows_star(self):
+        # Arrange
+        variables = "stmt s1, s2;"
+        query = "Select <s1, s2> such that Follows* (s1, s2)"
+        input_values = [variables, query]
+        # Act & Assert
+        with patch("builtins.input", side_effect=input_values):
+            self.query_evaluator.load()
+            result = self.query_evaluator.get_result()
+            self.assertEqual(result,
+                             "3 2, 4 2, 4 3, 5 2, 5 3, 5 4, 6 2, 6 3, 6 4, 6 5, 7 2, 7 3, 7 4, 7 5, 7 6, 8 2, 8 3, "
+                             "8 4, 8 5, 8 6, 8 7, 9 2, 9 3, 9 4, 9 5, 9 6, 9 7, 9 8, 10 2, 10 3, 10 4, 10 5, 10 6, "
+                             "10 7, 10 8, 10 9, 12 11, 14 13, 17 16, 18 16, 18 17, 19 11, 19 12, 20 2, 20 3, 20 4, "
+                             "20 5, 20 6, 20 7, 20 8, 20 9, 20 10, 25 24, 26 24, 26 25, 27 23, 32 30")
