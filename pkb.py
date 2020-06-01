@@ -59,14 +59,14 @@ class PKB:
     def isFollowing(self, curr, prev):
         return self._follows_map.get(curr) == prev
 
-    def isUsing(self, line, variable):
-        return variable in self._uses_map.get(line, [])
+    def isUsing(self, variable, line):
+        return variable in self._parent_map.get(line)
 
-    def isModifing(self, line, variable):
-        return variable == self._modifies_map.get(line, "")
+    def isModifing(self, variable, line):
+        return line == self._modifies_map.get(variable, "")
 
-    # def isCalling(self, line, proc):
-    #     return False;
+    def isCalling(self, proc, line):
+        return line == self._calls_map.get(proc)
 
     def _traverse(self, ast):
         for procedure in ast:

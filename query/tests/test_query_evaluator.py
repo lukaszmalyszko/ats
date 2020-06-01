@@ -1,8 +1,5 @@
-from unittest import TestCase
 from unittest.mock import patch
 
-from parser_ import Parser
-from pkb import PKB
 from query.query_evaluator import QueryEvaluator
 from query.tests.mixins import PkbTestCase
 
@@ -106,3 +103,82 @@ class TestQueryEvaluator(PkbTestCase):
             self.query_evaluator.load()
             result = self.query_evaluator.get_result()
             self.assertEqual(result, "5")
+
+    def test_select_statement_that_is_parent(self):
+        # Arrange
+        variables = "stmt s1, s2;"
+        query = "Select s1 such that Parent (s1, s2)"
+        input_values = [variables, query]
+        # Act & Assert
+        with patch("builtins.input", side_effect=input_values):
+            self.query_evaluator.load()
+            result = self.query_evaluator.get_result()
+            self.assertEqual(result, "10, 12, 23, 30, 35, 36")
+
+    def test_select_statement_that_is_using_with_var_name(self):
+        # Arrange
+        variables = "stmt s1; variable v;"
+        query = "Select s1 such that Uses (s1, v) with v.varName='x'"
+        input_values = [variables, query]
+        # Act & Assert
+        with patch("builtins.input", side_effect=input_values):
+            self.query_evaluator.load()
+            result = self.query_evaluator.get_result()
+            self.assertEqual(result, "4, 5, 7, 9, 11, 24, 31, 32, 39")
+
+    def test_select_statement_that_modifies_and_uses(self):
+        # Arrange
+        variables = "stmt s1; variable v;"
+        query = "Select s1 such that Modifies(s1,'x') and Uses(s1,'y')"
+        input_values = [variables, query]
+        # Act & Assert
+        with patch("builtins.input", side_effect=input_values):
+            self.query_evaluator.load()
+            result = self.query_evaluator.get_result()
+            self.assertEqual(result, "3, 16, 19, 32, 37")
+
+    def test_select_statements_that_modifies(self):
+        # Arrange
+        variables = "stmt s1; variable v;"
+        query = "Select <s1, v> such that Modifies(s1,v) with v.varName='x'"
+        input_values = [variables, query]
+        # Act & Assert
+        with patch("builtins.input", side_effect=input_values):
+            self.query_evaluator.load()
+            result = self.query_evaluator.get_result()
+            self.assertEqual(result, "3 x, 16 x, 19 x, 32 x, 37 x")
+
+    def test_select_statement_that_is_parent_star(self):
+        # Arrange
+        variables = "stmt s1, s2;"
+        query = "Select <s1, s2> such that Parent* (s1, s2)"
+        input_values = [variables, query]
+        # Act & Assert
+        with patch("builtins.input", side_effect=input_values):
+            self.query_evaluator.load()
+            result = self.query_evaluator.get_result()
+            self.assertEqual(result,
+                             "10 11, 10 12, 10 13, 10 14, 10 16, 10 17, 10 18, 10 19, 12 13, 12 14, 12 16, 12 17, "
+                             "12 18, 23 24, 23 25, 23 26, 30 31, 35 36, 35 37, 35 39, 36 37, 36 39")
+
+    def test_select_statement_that_is_parent_star_with(self):
+        # Arrange
+        variables = "stmt s1, s2;"
+        query = "Select <s1, s2> such that Parent* (s1, s2) with s2.stmt#= 14"
+        input_values = [variables, query]
+        # Act & Assert
+        with patch("builtins.input", side_effect=input_values):
+            self.query_evaluator.load()
+            result = self.query_evaluator.get_result()
+            self.assertEqual(result, "10 14, 12 14")
+
+    def test_select_statement_that_is_parent_star_with_first_param_condition(self):
+        # Arrange
+        variables = "stmt s1, s2;"
+        query = "Select <s1, s2> such that Parent* (s1, s2) with s1.stmt#= 10"
+        input_values = [variables, query]
+        # Act & Assert
+        with patch("builtins.input", side_effect=input_values):
+            self.query_evaluator.load()
+            result = self.query_evaluator.get_result()
+            self.assertEqual(result, "10 11, 10 12, 10 13, 10 14, 10 16, 10 17, 10 18, 10 19")

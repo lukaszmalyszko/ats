@@ -27,6 +27,3 @@ else:
             print(query_evaluator.get_result())
     except IOError:
         print("Couldn't read file: " + sys.argv[1])
-
-
-
