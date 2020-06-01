@@ -50,17 +50,20 @@ class PKB:
     def get_node_with_index(self, line):
         return [{key: value} for key, value in self._node_map.items() if value.get_line() == line][0]
 
+    def get_node_with_value(self, element):
+        return [{key: value} for key, value in self._node_map.items() if value.get_value() == element][0]
+
     def isParent(self, parent, child):
         return self._parent_map.get(child) == parent
 
     def isFollowing(self, curr, prev):
         return self._follows_map.get(curr) == prev
 
-    def isUsing(self, variable, line):
-        return variable in self._parent_map.get(line)
+    def isUsing(self, line, variable):
+        return variable in self._uses_map.get(line, [])
 
-    def isModifing(self, variable, line):
-        return line == self._modifies_map.get(variable, "")
+    def isModifing(self, line, variable):
+        return variable == self._modifies_map.get(line, "")
 
     # def isCalling(self, line, proc):
     #     return False;
@@ -95,6 +98,9 @@ class PKB:
                 self.__add_modifies(stmt)
                 self.__add_uses_for_assign(stmt, self._ast.get_child(stmt, 1))
                 self.__add_to_assign_list(stmt)
+
+            if self._ast.get_type(stmt) == NodeType.CALL:
+                self.__add_to_call_list(stmt)
 
         self.__fill_follows(stmt_lst)
 
@@ -179,5 +185,10 @@ class PKB:
 
     def __add_to_variables_list(self, node):
         self._variables_map.update({
+            self.__get_node_index(node): node
+        })
+
+    def __add_to_call_list(self, node):
+        self._calls_map.update({
             self.__get_node_index(node): node
         })
