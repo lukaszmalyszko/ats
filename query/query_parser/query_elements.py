@@ -11,7 +11,7 @@ from query.query_tree.tree_nodes import (
     ParentStarNode,
     FollowsNode,
     FollowsStarNode,
-    ConditionNode,
+    ConditionNode, CallsNode,
 )
 from query.utils import REL_REF, CONDITION
 
@@ -323,6 +323,28 @@ class FollowsStar(Relation):
         tree.add_such_that(follows_star_node)
 
 
+class Calls(Relation):
+    def __init__(self, query_preprocessor):
+        super().__init__(query_preprocessor)
+        self.error_message = "# Niepoprawna składnia Calls"
+        self.next = Element
+
+    def validate_params(self):
+        # Calls(stmtRef, stmtRef)
+        self.first_param = ParamsValidator.get_statement_ref(
+            self.first_param, self.query_preprocessor, self.pkb
+        )
+        self.second_param = ParamsValidator.get_statement_ref(
+            self.second_param, self.query_preprocessor, self.pkb
+        )
+
+    def create_node(self, value, tree):
+        calls_node = CallsNode()
+        calls_node.first_arg = self.first_param
+        calls_node.second_arg = self.second_param
+        tree.add_such_that(calls_node)
+
+
 class Condition(Element):
     def __init__(self, query_preprocessor):
         super().__init__(query_preprocessor)
@@ -372,6 +394,7 @@ RELATION_TO_MODEL = {
     "Parent*": ParentStar,
     "Follows": Follows,
     "Follows*": FollowsStar,
+    "Calls": Calls,
 }
 
 CONSTRUCTION_TO_NEXT_MAPPING = {

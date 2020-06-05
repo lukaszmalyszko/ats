@@ -313,6 +313,26 @@ class FollowsStarNode(RelationNode):
         return total_result
 
 
+class CallsNode(RelationNode):
+    def __init__(self):
+        super().__init__()
+
+    def evaluate(self, pkb, with_stmt, previous_result=None):
+        first_args, second_args = self.get_arguments(pkb, with_stmt, previous_result)
+
+        for first_arg in first_args:
+            first_index, first_node = list(first_arg.items())[0]
+            for second_arg in second_args:
+                second_index, second_node = list(second_arg.items())[0]
+                if pkb.isCalling(first_index, second_node.get_value()):
+                    self._first_arg_result.append({first_index: first_node})
+                    self._second_arg_result.append({second_index: second_node})
+        return {
+            self.first_arg: self._first_arg_result,
+            self.second_arg: self._second_arg_result,
+        }
+
+
 class ConditionNode(Node):
     def __init__(self):
         super().__init__()
