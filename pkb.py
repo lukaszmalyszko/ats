@@ -99,6 +99,9 @@ class PKB:
                 self.__add_uses_for_assign(stmt, self._ast.get_child(stmt, 1))
                 self.__add_to_assign_list(stmt)
 
+            if self._ast.get_type(stmt) == NodeType.CALL:
+                self.__add_to_call_list(stmt)
+
         self.__fill_follows(stmt_lst)
 
     def __create_node(self, node):
@@ -185,5 +188,10 @@ class PKB:
 
     def __add_to_variables_list(self, node):
         self._variables_map.update({
+            self.__get_node_index(node): node
+        })
+
+    def __add_to_call_list(self, node):
+        self._calls_map.update({
             self.__get_node_index(node): node
         })

@@ -15,6 +15,11 @@ class Assign(Stmt):
         super().__init__(name)
 
 
+class Procedure(Stmt):
+    def __init__(self, name):
+        super().__init__(name)
+
+
 class Ref:
     def __init__(self, name):
         self.name = name

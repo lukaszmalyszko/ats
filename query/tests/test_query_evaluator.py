@@ -197,3 +197,14 @@ class TestQueryEvaluator(PkbTestCase):
                              "8 4, 8 5, 8 6, 8 7, 9 2, 9 3, 9 4, 9 5, 9 6, 9 7, 9 8, 10 2, 10 3, 10 4, 10 5, 10 6, "
                              "10 7, 10 8, 10 9, 12 11, 14 13, 17 16, 18 16, 18 17, 19 11, 19 12, 20 2, 20 3, 20 4, "
                              "20 5, 20 6, 20 7, 20 8, 20 9, 20 10, 25 24, 26 24, 26 25, 27 23, 32 30")
+
+    def test_select_line_that_calls(self):
+        # Arrange
+        variables = "procedure p, q;"
+        query = "Select p such that Calls(p,q)"
+        input_values = [variables, query]
+        # Act & Assert
+        with patch("builtins.input", side_effect=input_values):
+            self.query_evaluator.load()
+            result = self.query_evaluator.get_result()
+            self.assertEqual(result, "6, 8, 17, 20, 25")

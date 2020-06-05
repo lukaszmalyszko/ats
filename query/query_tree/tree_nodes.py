@@ -7,7 +7,7 @@ from query.declarations_parser.declarations_elements import (
     Assign,
     Variable,
     ProgLine,
-    Ref,
+    Ref, Procedure,
 )
 
 MAP_CLASS_TO_GET_METHOD = {
@@ -16,6 +16,7 @@ MAP_CLASS_TO_GET_METHOD = {
     Assign: "get_assign_map",
     Variable: "get_variables_map",
     ProgLine: "get_nodes_map",
+    Procedure: "get_nodes_map",
 }
 
 MAP_ATTR_NAME_TO_NODE_ATTRIBUTE = {"varName": "get_value", "stmt#": "get_line"}
@@ -324,7 +325,7 @@ class CallsNode(RelationNode):
             first_index, first_node = list(first_arg.items())[0]
             for second_arg in second_args:
                 second_index, second_node = list(second_arg.items())[0]
-                if pkb.isCalling(first_index, second_node.get_value()):
+                if pkb.isCalling(first_index, second_node):
                     self._first_arg_result.append({first_index: first_node})
                     self._second_arg_result.append({second_index: second_node})
         return {

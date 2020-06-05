@@ -9,7 +9,7 @@ from query.declarations_parser.declarations_elements import (
     Assign,
     ProgLine,
     Constant,
-    Variable,
+    Variable, Procedure,
 )
 
 
@@ -21,6 +21,7 @@ class DeclarationsValidator:
         "prog_line": ProgLine,
         "constant": Constant,
         "variable": Variable,
+        "procedure": Procedure,
     }
 
     def __init__(self):
