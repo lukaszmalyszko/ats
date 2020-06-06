@@ -10,7 +10,7 @@ class TestQueryPreprocessor(PkbTestCase):
         super().setUp()
         self.query_preprocessor = QueryPreprocessor(self.pkb)
         self.variables = "stmt s, s1; assign a, a1, a2; while w; variable v; constant c; prog_line n, n1, n2;"
-        self.query = "Select <s, s1> such that Modifies(s,'x')"
+        self.query = 'Select <s, s1> such that Modifies(s,"x")'
 
     def test_creates_select_and_empty_result(self):
         input_values = [self.variables, self.query]
@@ -27,7 +27,7 @@ class TestQueryPreprocessor(PkbTestCase):
         self.__then_query_tree_contains_such_that_node_with_string("s", "x")
 
     def test_creates_uses_node(self):
-        self.query = "Select s such that Uses(s, 'x') with s.stmt# = 10"
+        self.query = 'Select s such that Uses(s, "x") with s.stmt# = 10'
         self.__then_query_tree_contains_such_that_node_with_string("s", "x")
 
     def test_creates_parent_node(self):
@@ -47,7 +47,7 @@ class TestQueryPreprocessor(PkbTestCase):
         self.__then_query_tree_contains_such_that_node("s", "s1")
 
     def test_creates_with_node(self):
-        self.query = "Select s such that Modifies(s, 'x') with s.stmt# = 10"
+        self.query = 'Select s such that Modifies(s, "x") with s.stmt# = 10'
         input_values = [self.variables, self.query]
 
         with patch("builtins.input", side_effect=input_values):
@@ -59,7 +59,7 @@ class TestQueryPreprocessor(PkbTestCase):
             self.assertEqual(with_stmts[0].second_arg, 10)
 
     def test_creates_two_nodes(self):
-        self.query = "Select s such that Modifies(s,'x') and Uses(s, 'y')"
+        self.query = 'Select s such that Modifies(s,"x") and Uses(s, "y")'
         self.__then_query_tree_contains_such_that_node_with_string("s", "x")
         self.__then_query_tree_contains_such_that_node_with_string("s", "y", 1)
 
