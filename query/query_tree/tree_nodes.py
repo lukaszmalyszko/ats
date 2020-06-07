@@ -1,6 +1,6 @@
 from abc import ABC
 
-from ast import NodeType
+from ast_ import NodeType
 from query.declarations_parser.declarations_elements import (
     Stmt,
     While,

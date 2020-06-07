@@ -2,7 +2,7 @@ from enum import Enum
 from enum import auto
 import re
 from parser_interface import ParserInterface
-from ast import AST, NodeType
+from ast_ import AST, NodeType
 
 
 class TokenType(Enum):
