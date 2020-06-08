@@ -100,9 +100,15 @@ class RelationNode(Node):
             first_args = {}
             get_first_arg_method = MAP_CLASS_TO_GET_METHOD.get(self.first_arg.__class__, "")
             if isinstance(self.first_arg, int):
-                first_args = [pkb.get_node_with_index(self.first_arg)]
+                node = pkb.get_node_with_index(self.first_arg)
+                first_args = []
+                if node:
+                    first_args.append(node)
             elif isinstance(self.first_arg, str):
-                first_args = [pkb.get_node_with_value(self.first_arg)]
+                node = pkb.get_node_with_value(self.first_arg)
+                first_args = []
+                if node:
+                    first_args.append(node)
             elif get_first_arg_method:
                 first_args = [{key: value} for key, value in getattr(pkb, get_first_arg_method)().items()]
         if not second_args:
@@ -111,9 +117,15 @@ class RelationNode(Node):
                 self.second_arg.__class__, ""
             )
             if isinstance(self.second_arg, int):
-                second_args = [pkb.get_node_with_index(self.second_arg)]
+                node = pkb.get_node_with_index(self.second_arg)
+                second_args = []
+                if node:
+                    second_args.append(node)
             elif isinstance(self.second_arg, str):
-                second_args = [pkb.get_node_with_value(self.second_arg)]
+                node = pkb.get_node_with_value(self.second_arg)
+                second_args = []
+                if node:
+                    second_args.append(node)
             elif get_second_arg_method:
                 second_args = [{key: value} for key, value in getattr(pkb, get_second_arg_method)().items()]
         if not grand_parent:

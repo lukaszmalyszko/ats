@@ -9,7 +9,7 @@ class PkbTestCase(TestCase):
         self.pkb = self.__load_simple_program()
 
     def __load_simple_program(self):
-        f = open("test_data/bigger_program.txt", "r")
+        f = open("test_data/SIMPLE-Source-complex-for-students.txt", "r")
         program = f.read()
         f.close()
         p = Parser()

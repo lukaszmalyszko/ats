@@ -48,10 +48,16 @@ class PKB:
         return self._variables_map
 
     def get_node_with_index(self, line):
-        return [{key: value} for key, value in self._node_map.items() if value.get_line() == line][0]
+        try:
+            return [{key: value} for key, value in self._node_map.items() if value.get_line() == line][0]
+        except IndexError:
+            return None
 
     def get_node_with_value(self, element):
-        return [{key: value} for key, value in self._node_map.items() if value.get_value() == element][0]
+        try:
+            return [{key: value} for key, value in self._node_map.items() if value.get_value() == element][0]
+        except IndexError:
+            return None
 
     def isParent(self, parent, child):
         return self._parent_map.get(child) == parent
