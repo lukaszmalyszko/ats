@@ -164,7 +164,7 @@ class TestQueryEvaluator(PkbTestCase):
     def test_select_statement_that_is_parent_star_with(self):
         # Arrange
         variables = "stmt s1, s2;"
-        query = "Select <s1, s2> such that Parent* (s1, s2) with s2.stmt#= 14"
+        query = "Select <s1, s2> such that Parent* (s1, s2) with s1.stmt#= 9"
         input_values = [variables, query]
         # Act & Assert
         with patch("builtins.input", side_effect=input_values):
