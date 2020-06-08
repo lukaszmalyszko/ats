@@ -13,7 +13,10 @@ class QueryEvaluator:
         tree = self.preprocessor.get_tree()
         tree.evaluate(self.pkb)
         result = tree.get_result()
-        return self.__parse_result(result)
+        result = self.__parse_result(result)
+        if len(result) == 0:
+            result = 'none'
+        return result
 
     def __parse_result(self, result):
         result_str = ""

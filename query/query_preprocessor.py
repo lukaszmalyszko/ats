@@ -21,12 +21,12 @@ class QueryPreprocessor:
         return self.tree
 
     def _get_query(self):
-        query_input = input("Podaj zapytanie: ")
+        query_input = input()
         query = self.__build_query(query_input)
         return query
 
     def _get_declarations(self):
-        declarations_input = input("Podaj deklaracje: ")
+        declarations_input = input()
         declarations = self.__prepare_and_validate_declarations(declarations_input)
         return declarations
 

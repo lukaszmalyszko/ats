@@ -1,5 +1,5 @@
 from typing import Any, Dict, Set
-from ast import AST, NodeType
+from ast_ import AST, NodeType
 
 
 class PKB:
@@ -162,7 +162,7 @@ class PKB:
         for stmt in self._ast.get_children(stmt_lst):
             if prev_node:
                 self._follows_map.update({
-                    self.__get_node_index(stmt): self.__get_node_index(prev_node)
+                    self.__get_node_index(prev_node): self.__get_node_index(stmt)
                 })
             prev_node = stmt
 
