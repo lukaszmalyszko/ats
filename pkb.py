@@ -1,5 +1,5 @@
 from typing import Any, Dict, Set
-from ast import AST, NodeType
+from ast_ import AST, NodeType
 
 
 class PKB:
@@ -47,11 +47,11 @@ class PKB:
     def get_variables_map(self):
         return self._variables_map
 
-    def get_variable_by_name(self, name):
-        for (key, value) in self._variables_map.items():
-            if self._ast.get_node_value(value) == name:
-                return {key, value}
-        raise Exception("Variable not found")
+    def get_node_with_index(self, line):
+        return [{key: value} for key, value in self._node_map.items() if value.get_line() == line][0]
+
+    def get_node_with_value(self, element):
+        return [{key: value} for key, value in self._node_map.items() if value.get_value() == element][0]
 
     def isParent(self, parent, child):
         return self._parent_map.get(child) == parent
@@ -59,14 +59,14 @@ class PKB:
     def isFollowing(self, curr, prev):
         return self._follows_map.get(curr) == prev
 
-    def isUsing(self, variable, line):
-        return variable in self._parent_map.get(line)
+    def isUsing(self, line, variable):
+        return variable in self._uses_map.get(line, [])
 
-    def isModifing(self, variable, line):
-        return line in self._modifies_map.get(variable)
+    def isModifing(self, line, variable):
+        return variable == self._modifies_map.get(line, "")
 
-    # def isCalling(self, line, proc):
-    #     return False;
+    def isCalling(self, line, proc):
+        return proc == self._calls_map.get(line)
 
     def _traverse(self, ast):
         for procedure in ast:
@@ -74,8 +74,6 @@ class PKB:
             self.__traverse_stmt_lst(
                 self._ast.get_child(procedure, 0)
                 , procedure)
-
-        print("Usage: file_name")
 
     def __traverse_stmt_lst(self, stmt_lst, parent):
         for stmt in self._ast.get_children(stmt_lst):
@@ -100,6 +98,9 @@ class PKB:
                 self.__add_modifies(stmt)
                 self.__add_uses_for_assign(stmt, self._ast.get_child(stmt, 1))
                 self.__add_to_assign_list(stmt)
+
+            if self._ast.get_type(stmt) == NodeType.CALL:
+                self.__add_to_call_list(stmt)
 
         self.__fill_follows(stmt_lst)
 
@@ -149,9 +150,12 @@ class PKB:
                 self.__add_uses_for_assign(node, self._ast.get_children(processed_node))
 
     def __add_uses(self, node, var):
-        self._uses_map.update({
-            self.__get_node_index(node): self._ast.get_node_value(var)
-        })
+        if self._uses_map.get(self.__get_node_index(node)):
+            self._uses_map.get(self.__get_node_index(node)).append(self._ast.get_node_value(var))
+        else:
+            self._uses_map.update({
+                self.__get_node_index(node): [self._ast.get_node_value(var)]
+            })
 
     def __fill_follows(self, stmt_lst):
         prev_node = None
@@ -184,5 +188,10 @@ class PKB:
 
     def __add_to_variables_list(self, node):
         self._variables_map.update({
+            self.__get_node_index(node): node
+        })
+
+    def __add_to_call_list(self, node):
+        self._calls_map.update({
             self.__get_node_index(node): node
         })
