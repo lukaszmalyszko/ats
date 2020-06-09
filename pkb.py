@@ -11,12 +11,14 @@ class PKB:
     _modifies_map: Dict[str, Set[int]]
     _calls_map: Dict[str, Set[str]]
 
+    curr_tree: list
+
     def __init__(self, ast_tree):
         self._ast_tree = ast_tree
         self._node_map = {}
         self._parent_map = {}
         self._follows_map = {}
-        self._uses_map = {}
+        self._uses_map = dict(list(set()))
         self._modifies_map = {}
         self._calls_map = {}
 
@@ -26,6 +28,7 @@ class PKB:
         self._while_map = {}
         self._if_map = {}
         self._assign_map = {}
+        self.curr_tree = list()
 
         self._traverse(ast_tree)
 
@@ -88,16 +91,20 @@ class PKB:
             self.__add_to_stmt_list(stmt)
 
             if self._ast.get_type(stmt) == NodeType.WHILE:
+                self.curr_tree.append(stmt)
                 self.__traverse_stmt_lst(self._ast.get_child(stmt, 1), stmt)
                 self.__add_uses(stmt, self._ast.get_child(stmt, 0))
                 self.__add_to_while_list(stmt)
+                self.curr_tree.remove(stmt)
 
             if self._ast.get_type(stmt) == NodeType.IF:
+                self.curr_tree.append(stmt)
                 self.__traverse_stmt_lst(self._ast.get_child(stmt, 1), stmt)
                 self.__add_uses(stmt, self._ast.get_child(stmt, 0))
                 if len(self._ast.get_children(stmt)) > 2:
                     self.__traverse_stmt_lst(self._ast.get_child(stmt, 2), stmt)
                 self.__add_to_if_list(stmt)
+                self.curr_tree.remove(stmt)
 
             if self._ast.get_type(stmt) == NodeType.ASSIGN:
                 self.__create_node(self._ast.get_child(stmt, 0))
@@ -139,15 +146,29 @@ class PKB:
         })
 
     def __add_modifies(self, node):
-        self._modifies_map.update({
-            self.__get_node_index(node): self._ast.get_node_value(self._ast.get_child(node, 0))
-        })
+        if self._modifies_map.get(self.__get_node_index(node)):
+            if self._ast.get_node_value(self._ast.get_child(node, 0)) not in self._modifies_map.get(
+                    self.__get_node_index(node)):
+                self._modifies_map.get(self.__get_node_index(node)).append(
+                    self._ast.get_node_value(self._ast.get_child(node, 0)))
+        else:
+            self._modifies_map.update({
+                self.__get_node_index(node): [self._ast.get_node_value(self._ast.get_child(node, 0))]
+            })
+
+        for parent in self.curr_tree:
+            if self._modifies_map.get(self.__get_node_index(parent)):
+                if self._ast.get_node_value(self._ast.get_child(node, 0)) not in self._modifies_map.get(self.__get_node_index(parent)):
+                    self._modifies_map.get(self.__get_node_index(parent)).append(self._ast.get_node_value(self._ast.get_child(node, 0)))
+            else:
+                self._modifies_map.update({
+                    self.__get_node_index(parent): [self._ast.get_node_value(self._ast.get_child(node, 0))]
+                })
 
     def __add_uses_for_assign(self, node, processed_node):
         if isinstance(processed_node, list):
             for child in processed_node:
                 self.__add_uses_for_assign(node, child)
-
         else:
             child_type = self._ast.get_type(processed_node)
             if child_type == NodeType.VARIABLE:
@@ -162,6 +183,14 @@ class PKB:
             self._uses_map.update({
                 self.__get_node_index(node): [self._ast.get_node_value(var)]
             })
+        for parent in self.curr_tree:
+            if self._uses_map.get(self.__get_node_index(parent)):
+                if self._ast.get_node_value(var) not in self._uses_map.get(self.__get_node_index(parent)):
+                    self._uses_map.get(self.__get_node_index(parent)).append(self._ast.get_node_value(var))
+            else:
+                self._uses_map.update({
+                    self.__get_node_index(parent): [self._ast.get_node_value(var)]
+                })
 
     def __fill_follows(self, stmt_lst):
         prev_node = None
@@ -198,6 +227,12 @@ class PKB:
         })
 
     def __add_to_call_list(self, node):
-        self._calls_map.update({
-            self.__get_node_index(node): node
-        })
+        parent = self._ast.get_parent(self._ast.get_parent(node))
+        if self._calls_map.get(self.__get_node_index(parent)):
+            self._calls_map.get(self.__get_node_index(parent)).append(self.__get_node_index(node))
+        else:
+            self._calls_map.update({
+              self.__get_node_index(parent): [self.__get_node_index(node)]
+            })
+
+

@@ -110,6 +110,9 @@ class AST(ASTInterface):
     def get_children(self, node):
         return node.get_children()
 
+    def get_parent(self, node):
+        return node.get_parent()
+
     def set_node_line(self, node, line):
         node.set_line(line)
 
