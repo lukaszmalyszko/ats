@@ -25,7 +25,10 @@ else:
         while True:
             query_evaluator = QueryEvaluator(pkb)
             signal.signal(signal.SIGINT, exit_signal_handler)
-            query_evaluator.load()
-            print(query_evaluator.get_result())
+            try:
+                query_evaluator.load()
+                print(query_evaluator.get_result())
+            except Exception as exc:
+                print(f"{exc}")
     except IOError:
         print("Couldn't read file: " + sys.argv[1])
