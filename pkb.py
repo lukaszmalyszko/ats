@@ -16,6 +16,7 @@ class PKB:
     def __init__(self, ast_tree):
         self._ast_tree = ast_tree
         self._node_map = {}
+        self._procedure_map = {}
         self._parent_map = {}
         self._follows_map = {}
         self._uses_map = dict(list(set()))
@@ -50,6 +51,9 @@ class PKB:
     def get_variables_map(self):
         return self._variables_map
 
+    def get_procedures_map(self):
+        return self._procedure_map
+
     def get_node_with_index(self, line):
         try:
             return [{key: value} for key, value in self._node_map.items() if value.get_line() == line][0]
@@ -72,14 +76,15 @@ class PKB:
         return variable in self._uses_map.get(line, [])
 
     def isModifing(self, line, variable):
-        return variable == self._modifies_map.get(line, "")
+        return variable in self._modifies_map.get(line, "")
 
     def isCalling(self, line, proc):
-        return proc == self._calls_map.get(line)
+        return proc in self._calls_map.get(line)
 
     def _traverse(self, ast):
         for procedure in ast:
             self.__create_node(procedure)
+            self.__add_to_procedure_list(procedure)
             self.__traverse_stmt_lst(
                 self._ast.get_child(procedure, 0)
                 , procedure)
@@ -201,8 +206,13 @@ class PKB:
                 })
             prev_node = stmt
 
-    def __add_to_stmt_list(self, stmt):
+    def __add_to_stmt_list(self, procedure):
         self._stmt_map.update({
+            self.__get_node_index(procedure): procedure
+        })
+
+    def __add_to_procedure_list(self, stmt):
+        self._procedure_map.update({
             self.__get_node_index(stmt): stmt
         })
 
