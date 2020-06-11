@@ -213,7 +213,7 @@ class PKB:
 
     def __add_to_procedure_list(self, procedure):
         self._procedure_map.update({
-            self.__get_node_index(procedure): procedure
+            self._ast.get_node_value(procedure): procedure
         })
 
     def __add_to_if_list(self, if_node):
