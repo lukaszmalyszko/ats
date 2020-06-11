@@ -72,10 +72,10 @@ class PKB:
         return variable in self._uses_map.get(line, [])
 
     def isModifing(self, line, variable):
-        return variable == self._modifies_map.get(line, "")
+        return variable in self._modifies_map.get(line, [])
 
     def isCalling(self, line, proc):
-        return proc == self._calls_map.get(line)
+        return proc in self._calls_map.get(line, [])
 
     def _traverse(self, ast):
         for procedure in ast:
