@@ -230,3 +230,14 @@ class TestQueryEvaluator(PkbTestCase):
             self.query_evaluator.load()
             result = self.query_evaluator.get_result()
             self.assertEqual(result, "106, 116")
+
+    def test_select_if(self):
+        # Arrange
+        variables = "if ifs;"
+        query = 'Select ifs such that Follows*(ifs, 163)'
+        input_values = [variables, query]
+        # Act & Assert
+        with patch("builtins.input", side_effect=input_values):
+            self.query_evaluator.load()
+            result = self.query_evaluator.get_result()
+            self.assertEqual(result, "none")

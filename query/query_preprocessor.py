@@ -12,23 +12,15 @@ class QueryPreprocessor:
         self.pkb = pkb
 
     def get_input(self):
-        self.declarations = self._get_declarations()
-        self.query = self._get_query()
+        declarations_input = input()
+        query_input = input()
+        self.declarations = self.__prepare_and_validate_declarations(declarations_input)
+        self.query = self.__build_query(query_input)
 
         return self.declarations, self.query
 
     def get_tree(self):
         return self.tree
-
-    def _get_query(self):
-        query_input = input()
-        query = self.__build_query(query_input)
-        return query
-
-    def _get_declarations(self):
-        declarations_input = input()
-        declarations = self.__prepare_and_validate_declarations(declarations_input)
-        return declarations
 
     def __prepare_and_validate_declarations(self, declarations_input):
         declarations_validator = DeclarationsValidator()

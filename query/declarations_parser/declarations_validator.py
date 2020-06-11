@@ -9,13 +9,14 @@ from query.declarations_parser.declarations_elements import (
     Assign,
     ProgLine,
     Constant,
-    Variable, Procedure,
+    Variable, Procedure, If,
 )
 
 
 class DeclarationsValidator:
     CONTSTRUCTION_TO_BUILD = {
         "stmt": Stmt,
+        "if": If,
         "while": While,
         "assign": Assign,
         "prog_line": ProgLine,
