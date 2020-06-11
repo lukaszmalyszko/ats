@@ -337,7 +337,7 @@ class CallsNode(RelationNode):
             first_index, first_node = list(first_arg.items())[0]
             for second_arg in second_args:
                 second_index, second_node = list(second_arg.items())[0]
-                if pkb.isCalling(first_index, second_node):
+                if pkb.isCalling(first_index, second_index):
                     self._first_arg_result.append({first_index: first_node})
                     self._second_arg_result.append({second_index: second_node})
         return {

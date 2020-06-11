@@ -208,3 +208,25 @@ class TestQueryEvaluator(PkbTestCase):
             self.query_evaluator.load()
             result = self.query_evaluator.get_result()
             self.assertEqual(result, "Lily, Orchid, Tulip")
+
+    def test_select_statement_that_modifies(self):
+        # Arrange
+        variables = "stmt s;"
+        query = 'Select s such that Modifies(s,"x")'
+        input_values = [variables, query]
+        # Act & Assert
+        with patch("builtins.input", side_effect=input_values):
+            self.query_evaluator.load()
+            result = self.query_evaluator.get_result()
+            self.assertEqual(result, "6, 12, 105, 106, 107, 109, 116")
+
+    def test_select_statement_that_modifies2(self):
+        # Arrange
+        variables = "assign a; variable v;"
+        query = 'Select a such that Modifies(a,v) with v.varName="x"'
+        input_values = [variables, query]
+        # Act & Assert
+        with patch("builtins.input", side_effect=input_values):
+            self.query_evaluator.load()
+            result = self.query_evaluator.get_result()
+            self.assertEqual(result, "106, 116")

@@ -76,10 +76,10 @@ class PKB:
         return variable in self._uses_map.get(line, [])
 
     def isModifing(self, line, variable):
-        return variable in self._modifies_map.get(line, "")
+        return variable in self._modifies_map.get(line, [])
 
     def isCalling(self, line, proc):
-        return proc in self._calls_map.get(line)
+        return proc in self._calls_map.get(line, [])
 
     def _traverse(self, ast):
         for procedure in ast:
@@ -206,14 +206,14 @@ class PKB:
                 })
             prev_node = stmt
 
-    def __add_to_stmt_list(self, procedure):
+    def __add_to_stmt_list(self, stmt):
         self._stmt_map.update({
-            self.__get_node_index(procedure): procedure
+            self.__get_node_index(stmt): stmt
         })
 
-    def __add_to_procedure_list(self, stmt):
+    def __add_to_procedure_list(self, procedure):
         self._procedure_map.update({
-            self.__get_node_index(stmt): stmt
+            self.__get_node_index(procedure): procedure
         })
 
     def __add_to_if_list(self, if_node):
