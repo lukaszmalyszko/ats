@@ -7,11 +7,12 @@ from query.declarations_parser.declarations_elements import (
     Assign,
     Variable,
     ProgLine,
-    Ref, Procedure,
+    Ref, Procedure, If,
 )
 
 MAP_CLASS_TO_GET_METHOD = {
     Stmt: "get_stmt_map",
+    If: "get_if_map",
     While: "get_while_map",
     Assign: "get_assign_map",
     Variable: "get_variables_map",
@@ -209,7 +210,8 @@ class ParentStarNode(RelationNode):
             self.second_arg: [],
         }
         first_args, second_args = self.get_arguments(pkb, with_stmt, previous_result, self._grand_parent)
-        second_args = [{key: value} for key, value in pkb.get_nodes_map().items()]
+        if len(second_args) == 0:
+            second_args = [{key: value} for key, value in pkb.get_nodes_map().items()]
 
         for first_arg in first_args:
             first_index, first_node = list(first_arg.items())[0]
@@ -283,7 +285,8 @@ class FollowsStarNode(RelationNode):
             self.second_arg: [],
         }
         first_args, second_args = self.get_arguments(pkb, with_stmt, previous_result, self._grand_parent)
-        second_args = [{key: value} for key, value in pkb.get_nodes_map().items()]
+        if len(second_args) == 0:
+            second_args = [{key: value} for key, value in pkb.get_nodes_map().items()]
 
         for first_arg in first_args:
             first_index, first_node = list(first_arg.items())[0]
