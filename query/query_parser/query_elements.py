@@ -331,11 +331,11 @@ class Calls(Relation):
 
     def validate_params(self):
         # Calls(stmtRef, stmtRef)
-        self.first_param = ParamsValidator.get_statement_ref(
-            self.first_param, self.query_preprocessor, self.pkb
+        self.first_param = ParamsValidator.get_procedure_ref(
+            self.first_param, self.query_preprocessor
         )
-        self.second_param = ParamsValidator.get_statement_ref(
-            self.second_param, self.query_preprocessor, self.pkb
+        self.second_param = ParamsValidator.get_procedure_ref(
+            self.second_param, self.query_preprocessor
         )
 
     def create_node(self, value, tree):

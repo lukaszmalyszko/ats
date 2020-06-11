@@ -129,7 +129,7 @@ class TestQueryEvaluator(PkbTestCase):
     def test_select_statement_that_modifies_and_uses(self):
         # Arrange
         variables = "stmt s1; variable v;"
-        query = 'Select s1 such that Modifies(s1,"x") and Uses(s1,"y")'
+        query = 'Select s1 such that Modifies(s1,"x1") and Uses(s1,"x2")'
         input_values = [variables, query]
         # Act & Assert
         with patch("builtins.input", side_effect=input_values):
@@ -170,7 +170,7 @@ class TestQueryEvaluator(PkbTestCase):
         with patch("builtins.input", side_effect=input_values):
             self.query_evaluator.load()
             result = self.query_evaluator.get_result()
-            self.assertEqual(result, "9 14, 11 14")
+            self.assertEqual(result, "none")
 
     def test_select_statement_that_is_parent_star_with_first_param_condition(self):
         # Arrange

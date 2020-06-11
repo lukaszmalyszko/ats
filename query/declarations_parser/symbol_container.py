@@ -17,3 +17,9 @@ class SymbolContainer:
                 if var_name == var.name:
                     return var
         return False
+
+    def get_procedure(self, proc_name):
+        for proc in self.entities.get("procedure", []):
+            if proc_name == proc.name:
+                return proc
+        return False

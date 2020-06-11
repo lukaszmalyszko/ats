@@ -28,6 +28,15 @@ class ParamsValidator:
         return stmt_ref
 
     @staticmethod
+    def get_procedure_ref(ref, query_preprocessor):
+        if ref is "_":
+            return "_"
+        proc_ref = query_preprocessor.symbols.get_procedure(ref)
+        if not proc_ref:
+            raise InvalidQueryParamException("# Niepoprawne parametry")
+        return proc_ref
+
+    @staticmethod
     def get_entity_ref(ref, query_preprocessor):
         if re.match(f"(['\"]{IDENT}['\"])", ref):
             # TODO check if program contains such variable
