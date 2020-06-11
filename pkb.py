@@ -238,6 +238,8 @@ class PKB:
 
     def __add_to_call_list(self, node):
         parent = self._ast.get_parent(self._ast.get_parent(node))
+        while parent.get_type() != NodeType.PROCEDURE:
+            parent = parent.get_parent()
         if self._calls_map.get(self.__get_node_index(parent)):
             if (self._ast.get_node_value(node) not in self._calls_map.get(self.__get_node_index(parent))):
                 self._calls_map.get(self.__get_node_index(parent)).append(self._ast.get_node_value(node))

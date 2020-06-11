@@ -207,7 +207,7 @@ class TestQueryEvaluator(PkbTestCase):
         with patch("builtins.input", side_effect=input_values):
             self.query_evaluator.load()
             result = self.query_evaluator.get_result()
-            self.assertEqual(result, "Lily, Orchid, Tulip")
+            self.assertEqual(result, "Draw, Enlarge, Main, PP, RR, Rotate, SS, Shrink, TT, Translate, UU")
 
     def test_select_statement_that_modifies(self):
         # Arrange
