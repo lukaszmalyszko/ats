@@ -138,6 +138,26 @@ class RelationNode(Node):
 
         return first_args, second_args
 
+    def _evaluate_first_arg(self, pkb, node):
+        if isinstance(self.first_arg, int):
+            pkb_node = pkb.get_node_with_index(self.first_arg)
+            return node == pkb_node
+        elif isinstance(self.first_arg, str):
+            pkb_node = pkb.get_node_with_value(self.first_arg)
+            return node == pkb_node
+        else:
+            return True
+
+    def _evaluate_second_arg(self, pkb, node):
+        if isinstance(self.second_arg, int):
+            pkb_node = pkb.get_node_with_index(self.second_arg)
+            return node == pkb_node
+        elif isinstance(self.second_arg, str):
+            pkb_node = pkb.get_node_with_value(self.second_arg)
+            return node == pkb_node
+        else:
+            return True
+
 
 class ModifiesNode(RelationNode):
     def __init__(self):
@@ -210,8 +230,7 @@ class ParentStarNode(RelationNode):
             self.second_arg: [],
         }
         first_args, second_args = self.get_arguments(pkb, with_stmt, previous_result, self._grand_parent)
-        if len(second_args) == 0:
-            second_args = [{key: value} for key, value in pkb.get_nodes_map().items()]
+        second_args = [{key: value} for key, value in pkb.get_nodes_map().items()]
 
         for first_arg in first_args:
             first_index, first_node = list(first_arg.items())[0]
@@ -246,6 +265,8 @@ class ParentStarNode(RelationNode):
                     correct = stmt.evaluate_node(list(result[0].values())[0])
                 if stmt.first_arg == self.second_arg:
                     correct = stmt.evaluate_node(list(result[1].values())[0])
+            correct = correct and self._evaluate_first_arg(pkb, result[0])
+            correct = correct and self._evaluate_second_arg(pkb, result[1])
             if correct:
                 first_arg_result.append(result[0])
                 second_arg_result.append(result[1])
@@ -285,8 +306,7 @@ class FollowsStarNode(RelationNode):
             self.second_arg: [],
         }
         first_args, second_args = self.get_arguments(pkb, with_stmt, previous_result, self._grand_parent)
-        if len(second_args) == 0:
-            second_args = [{key: value} for key, value in pkb.get_nodes_map().items()]
+        second_args = [{key: value} for key, value in pkb.get_nodes_map().items()]
 
         for first_arg in first_args:
             first_index, first_node = list(first_arg.items())[0]
@@ -321,6 +341,8 @@ class FollowsStarNode(RelationNode):
                     correct = stmt.evaluate_node(list(result[0].values())[0])
                 if stmt.first_arg == self.second_arg:
                     correct = stmt.evaluate_node(list(result[1].values())[0])
+            correct = correct and self._evaluate_first_arg(pkb, result[0])
+            correct = correct and self._evaluate_second_arg(pkb, result[1])
             if correct:
                 first_arg_result.append(result[0])
                 second_arg_result.append(result[1])

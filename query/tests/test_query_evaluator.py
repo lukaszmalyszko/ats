@@ -175,13 +175,13 @@ class TestQueryEvaluator(PkbTestCase):
     def test_select_statement_that_is_parent_star_with_first_param_condition(self):
         # Arrange
         variables = "stmt s1, s2;"
-        query = "Select <s1, s2> such that Parent* (s1, s2) with s1.stmt#= 9"
+        query = "Select <s1, s2> such that Parent* (s1, s2) with s2.stmt#= 14"
         input_values = [variables, query]
         # Act & Assert
         with patch("builtins.input", side_effect=input_values):
             self.query_evaluator.load()
             result = self.query_evaluator.get_result()
-            self.assertEqual(result, "9 10, 9 11, 9 12, 9 13, 9 14, 9 15, 9 16, 9 17")
+            self.assertEqual(result, "6 14, 12 14")
 
     def test_select_statement_that_follows_star(self):
         # Arrange
