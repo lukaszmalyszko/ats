@@ -21,7 +21,7 @@ class PKB:
         self._follows_map = {}
         self._uses_map = dict(list(set()))
         self._modifies_map = {}
-        self._calls_map = {}
+        self._calls_map = dict(list(set()))
 
         self.__index = 0
         self._stmt_map = {}
@@ -213,7 +213,7 @@ class PKB:
 
     def __add_to_procedure_list(self, procedure):
         self._procedure_map.update({
-            self._ast.get_node_value(procedure): procedure
+            self.__get_node_index(procedure): procedure
         })
 
     def __add_to_if_list(self, if_node):
@@ -239,10 +239,11 @@ class PKB:
     def __add_to_call_list(self, node):
         parent = self._ast.get_parent(self._ast.get_parent(node))
         if self._calls_map.get(self.__get_node_index(parent)):
-            self._calls_map.get(self.__get_node_index(parent)).append(self.__get_node_index(node))
+            if (self._ast.get_node_value(node) not in self._calls_map.get(self.__get_node_index(parent))):
+                self._calls_map.get(self.__get_node_index(parent)).append(self._ast.get_node_value(node))
         else:
             self._calls_map.update({
-              self.__get_node_index(parent): [self.__get_node_index(node)]
+              self.__get_node_index(parent): [self._ast.get_node_value(node)]
             })
 
 
